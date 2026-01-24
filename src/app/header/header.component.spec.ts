@@ -20,4 +20,22 @@ describe('HeaderComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should emit search value', () => {
+    const spy = jasmine.createSpy('search');
+    component.search.subscribe(spy);
+
+    component.onSearch('mew');
+
+    expect(spy).toHaveBeenCalledWith('mew');
+  });
+
+  it('should emit toggle favorites', () => {
+    const spy = jasmine.createSpy('toggleFavorites');
+    component.toggleFavorites.subscribe(spy);
+
+    component.onToggleFavorites();
+
+    expect(spy).toHaveBeenCalled();
+  });
 });
