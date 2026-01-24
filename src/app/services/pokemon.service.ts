@@ -51,6 +51,24 @@ export interface PokemonMove {
   };
 }
 
+export interface PokemonSpeciesResponse {
+  evolution_chain: {
+    url: string;
+  };
+}
+
+export interface EvolutionChainNode {
+  species: {
+    name: string;
+    url: string;
+  };
+  evolves_to: EvolutionChainNode[];
+}
+
+export interface EvolutionChainResponse {
+  chain: EvolutionChainNode;
+}
+
 export interface Pokemon {
   id: number;
   name: string;
@@ -87,5 +105,13 @@ export class PokemonService {
   searchPokemonByName(name: string): Observable<Pokemon> {
     const normalized = name.trim().toLowerCase();
     return this.getPokemon(normalized);
+  }
+
+  getPokemonSpecies(nameOrId: string | number): Observable<PokemonSpeciesResponse> {
+    return this.http.get<PokemonSpeciesResponse>(`${this.baseUrl}/pokemon-species/${nameOrId}`);
+  }
+
+  getEvolutionChain(url: string): Observable<EvolutionChainResponse> {
+    return this.http.get<EvolutionChainResponse>(url);
   }
 }

@@ -286,6 +286,40 @@
   text-transform: capitalize;
 }
 
+.pokemon-dialog__muted {
+  color: #6f7680;
+  font-size: 0.85rem;
+}
+
+.pokemon-dialog__evolution-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.pokemon-dialog__evolution-item {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-transform: capitalize;
+  font-size: 0.85rem;
+}
+
+.pokemon-dialog__evolution-item img {
+  width: 64px;
+  height: 64px;
+  image-rendering: pixelated;
+  background: #f3f6fb;
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.pokemon-dialog__evolution-arrow {
+  color: #6f7680;
+  font-size: 1.1rem;
+}
+
 .pokemon-dialog__stats {
   display: grid;
   gap: 10px;

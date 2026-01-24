@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { PokemonCardComponent } from './pokemon-card.component';
-import { Pokemon, PokemonListResponse, PokemonService } from '../services/pokemon.service';
+import { EvolutionChainResponse, Pokemon, PokemonListResponse, PokemonService, PokemonSpeciesResponse } from '../services/pokemon.service';
 
 class PokemonServiceMock {
   private readonly pokemonMap: Record<string, Pokemon> = {
@@ -48,6 +48,32 @@ class PokemonServiceMock {
   getPokemon(nameOrId: string | number): ReturnType<PokemonService['getPokemon']> {
     const key = String(nameOrId).toLowerCase();
     return of(this.pokemonMap[key]);
+  }
+
+  getPokemonSpecies(): ReturnType<PokemonService['getPokemonSpecies']> {
+    const response: PokemonSpeciesResponse = {
+      evolution_chain: {
+        url: 'https://pokeapi.co/api/v2/evolution-chain/1/',
+      },
+    };
+
+    return of(response);
+  }
+
+  getEvolutionChain(): ReturnType<PokemonService['getEvolutionChain']> {
+    const response: EvolutionChainResponse = {
+      chain: {
+        species: { name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon-species/1/' },
+        evolves_to: [
+          {
+            species: { name: 'charmander', url: 'https://pokeapi.co/api/v2/pokemon-species/4/' },
+            evolves_to: [],
+          },
+        ],
+      },
+    };
+
+    return of(response);
   }
 }
 

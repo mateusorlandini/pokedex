@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
-import { Pokemon, PokemonService } from '../services/pokemon.service';
+import { EvolutionChainNode, Pokemon, PokemonService } from '../services/pokemon.service';
 
 @Component({
   selector: 'app-pokemon-card',
@@ -16,6 +16,8 @@ export class PokemonCardComponent implements OnInit {
   @Input() filterTerm = '';
   @Input() showFavoritesOnly = false;
   selectedPokemon: Pokemon | null = null;
+  evolutionChain: Pokemon[] = [];
+  isEvolutionLoading = false;
   favorites = new Set<number>();
 
   constructor(private readonly pokemonService: PokemonService) {}
@@ -70,10 +72,13 @@ export class PokemonCardComponent implements OnInit {
 
   openPokemon(pokemon: Pokemon): void {
     this.selectedPokemon = pokemon;
+    this.loadEvolutionChain(pokemon);
   }
 
   closePokemon(): void {
     this.selectedPokemon = null;
+    this.evolutionChain = [];
+    this.isEvolutionLoading = false;
   }
 
   toggleFavorite(pokemon: Pokemon, event: MouseEvent): void {
@@ -101,5 +106,61 @@ export class PokemonCardComponent implements OnInit {
 
   formatWeight(weight: number): string {
     return `${weight / 10} kg`;
+  }
+
+  private loadEvolutionChain(pokemon: Pokemon): void {
+    this.isEvolutionLoading = true;
+    this.evolutionChain = [];
+
+    this.pokemonService.getPokemonSpecies(pokemon.id).subscribe({
+      next: (species) => {
+        const chainUrl = species?.evolution_chain?.url;
+        if (!chainUrl) {
+          this.isEvolutionLoading = false;
+          return;
+        }
+
+        this.pokemonService.getEvolutionChain(chainUrl).subscribe({
+          next: (chain) => {
+            const names = this.extractEvolutionNames(chain.chain);
+            if (!names.length) {
+              this.isEvolutionLoading = false;
+              return;
+            }
+
+            forkJoin(names.map((name) => this.pokemonService.getPokemon(name))).subscribe({
+              next: (pokemonList) => {
+                this.evolutionChain = pokemonList;
+                this.isEvolutionLoading = false;
+              },
+              error: () => {
+                this.isEvolutionLoading = false;
+              },
+            });
+          },
+          error: () => {
+            this.isEvolutionLoading = false;
+          },
+        });
+      },
+      error: () => {
+        this.isEvolutionLoading = false;
+      },
+    });
+  }
+
+  private extractEvolutionNames(node: EvolutionChainNode | null): string[] {
+    if (!node) {
+      return [];
+    }
+
+    const names: string[] = [];
+    const walk = (current: EvolutionChainNode): void => {
+      names.push(current.species.name);
+      current.evolves_to.forEach(walk);
+    };
+
+    walk(node);
+    return names;
   }
 }
