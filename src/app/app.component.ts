@@ -12,4 +12,9 @@ import {HeaderComponent} from "./header/header.component";
 })
 export class AppComponent {
   title = 'Pokedex';
+  searchTerm = '';
+
+  onSearch(value: string): void {
+    this.searchTerm = value;
+  }
 }

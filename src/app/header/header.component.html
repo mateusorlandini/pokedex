@@ -10,6 +10,15 @@
       <p class="pokedex-header__subtitle">
         Uma Pokedex cheia de Pokemons, pronta para capturar, comparar e evoluir seu time.
       </p>
+      <div class="pokedex-header__search">
+        <input
+          class="pokedex-header__input"
+          type="search"
+          placeholder="Buscar por nome ou ID"
+          #searchInput
+          (input)="onSearch(searchInput.value)"
+        />
+      </div>
       <div class="pokedex-header__actions">
         <button class="pokedex-header__button pokedex-header__button--ghost" type="button">
           Ver favoritos
