@@ -17,8 +17,12 @@
         />
       </div>
       <div class="pokedex-header__actions">
-        <button class="pokedex-header__button pokedex-header__button--ghost" type="button">
-          Ver favoritos
+        <button
+          class="pokedex-header__button pokedex-header__button--ghost"
+          type="button"
+          (click)="onToggleFavorites()"
+        >
+          {{ showFavoritesOnly ? 'Ver todos' : 'Ver favoritos' }}
         </button>
       </div>
     </div>

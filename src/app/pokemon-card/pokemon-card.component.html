@@ -7,10 +7,23 @@
   @if (!isLoading) {
     <ul class="pokemon-grid">
       @for (pokemon of filteredPokemonList; track pokemon.id) {
-        <li class="pokemon-card">
+        <li class="pokemon-card" (click)="openPokemon(pokemon)">
+          <button
+            class="pokemon-favorite"
+            type="button"
+            (click)="toggleFavorite(pokemon, $event)"
+            [class.pokemon-favorite--active]="isFavorite(pokemon)"
+            aria-label="Favoritar pokemon"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 3.4l2.5 5.1 5.6.8-4 3.9.9 5.6L12 16.5 7 18.8l.9-5.6-4-3.9 5.6-.8L12 3.4z"
+              />
+            </svg>
+          </button>
           <div class="pokemon-image">
             <img
-              [src]="pokemon.sprites.front_default"
+              [src]="getPokemonImage(pokemon)"
               [alt]="pokemon.name"
               loading="lazy"
             />
@@ -20,7 +33,7 @@
             <h3 class="pokemon-name">{{ pokemon.name }}</h3>
             <div class="pokemon-types">
               @for (type of pokemon.types; track type.type.name) {
-                <span class="pokemon-type">
+                <span [ngClass]="['pokemon-type', 'type-' + type.type.name]">
                   {{ type.type.name }}
                 </span>
               }
@@ -29,5 +42,81 @@
         </li>
       }
     </ul>
+  }
+  @if (selectedPokemon) {
+    <div class="pokemon-dialog-overlay" (click)="closePokemon()">
+      <div class="pokemon-dialog" (click)="$event.stopPropagation()">
+        <button class="pokemon-dialog__close" type="button" (click)="closePokemon()">
+          Fechar
+        </button>
+        <div class="pokemon-dialog__header">
+          <div class="pokemon-dialog__avatar">
+            <img
+              [src]="getPokemonImage(selectedPokemon)"
+              [alt]="selectedPokemon.name"
+            />
+          </div>
+          <div>
+            <span class="pokemon-dialog__id">#{{ selectedPokemon.id }}</span>
+            <h3 class="pokemon-dialog__name">{{ selectedPokemon.name }}</h3>
+            <div class="pokemon-dialog__types">
+              @for (type of selectedPokemon.types; track type.type.name) {
+                <span [ngClass]="['pokemon-type', 'type-' + type.type.name]">
+                  {{ type.type.name }}
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="pokemon-dialog__grid">
+          <div class="pokemon-dialog__section">
+            <h4>Detalhes</h4>
+            <div class="pokemon-dialog__meta">
+              <span>Altura</span>
+              <strong>{{ formatHeight(selectedPokemon.height) }}</strong>
+            </div>
+            <div class="pokemon-dialog__meta">
+              <span>Peso</span>
+              <strong>{{ formatWeight(selectedPokemon.weight) }}</strong>
+            </div>
+            <div class="pokemon-dialog__meta">
+              <span>Experiencia</span>
+              <strong>{{ selectedPokemon.base_experience }}</strong>
+            </div>
+          </div>
+          <div class="pokemon-dialog__section">
+            <h4>Habilidades</h4>
+            <div class="pokemon-dialog__chips">
+              @for (ability of selectedPokemon.abilities; track ability.ability.name) {
+                <span>{{ ability.ability.name }}</span>
+              }
+            </div>
+          </div>
+          <div class="pokemon-dialog__section">
+            <h4>Status</h4>
+            <div class="pokemon-dialog__stats">
+              @for (stat of selectedPokemon.stats; track stat.stat.name) {
+                <div>
+                  <span>{{ stat.stat.name }}</span>
+                  <strong>{{ stat.base_stat }}</strong>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="pokemon-dialog__section">
+            <h4>Movimentos</h4>
+            <div class="pokemon-dialog__chips pokemon-dialog__moves">
+              @for (move of selectedPokemon.moves; track move.move.name) {
+                <span>{{ move.move.name }}</span>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="pokemon-dialog__section pokemon-dialog__raw">
+          <h4>Dados completos</h4>
+          <pre>{{ selectedPokemon | json }}</pre>
+        </div>
+      </div>
+    </div>
   }
 </section>

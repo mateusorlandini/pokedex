@@ -26,11 +26,42 @@ export interface PokemonSprites {
   front_default: string | null;
 }
 
+export interface PokemonAbility {
+  ability: {
+    name: string;
+    url: string;
+  };
+  is_hidden: boolean;
+  slot: number;
+}
+
+export interface PokemonStat {
+  base_stat: number;
+  effort: number;
+  stat: {
+    name: string;
+    url: string;
+  };
+}
+
+export interface PokemonMove {
+  move: {
+    name: string;
+    url: string;
+  };
+}
+
 export interface Pokemon {
   id: number;
   name: string;
+  base_experience: number;
+  height: number;
+  weight: number;
   sprites: PokemonSprites;
   types: PokemonType[];
+  abilities: PokemonAbility[];
+  stats: PokemonStat[];
+  moves: PokemonMove[];
 }
 
 @Injectable({ providedIn: 'root' })

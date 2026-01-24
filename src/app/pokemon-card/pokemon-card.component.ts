@@ -14,6 +14,9 @@ export class PokemonCardComponent implements OnInit {
   pokemonList: Pokemon[] = [];
   isLoading = true;
   @Input() filterTerm = '';
+  @Input() showFavoritesOnly = false;
+  selectedPokemon: Pokemon | null = null;
+  favorites = new Set<number>();
 
   constructor(private readonly pokemonService: PokemonService) {}
 
@@ -46,16 +49,57 @@ export class PokemonCardComponent implements OnInit {
 
   get filteredPokemonList(): Pokemon[] {
     const term = this.filterTerm.trim().toLowerCase();
-    if (!term) {
-      return this.pokemonList;
+    let list = this.pokemonList;
+
+    if (this.showFavoritesOnly) {
+      list = list.filter((pokemon) => this.favorites.has(pokemon.id));
     }
 
-    return this.pokemonList.filter((pokemon) => {
+    if (!term) {
+      return list;
+    }
+
+    return list.filter((pokemon) => {
       if (pokemon.name.toLowerCase().includes(term)) {
         return true;
       }
 
       return String(pokemon.id) === term;
     });
+  }
+
+  openPokemon(pokemon: Pokemon): void {
+    this.selectedPokemon = pokemon;
+  }
+
+  closePokemon(): void {
+    this.selectedPokemon = null;
+  }
+
+  toggleFavorite(pokemon: Pokemon, event: MouseEvent): void {
+    event.stopPropagation();
+
+    if (this.favorites.has(pokemon.id)) {
+      this.favorites.delete(pokemon.id);
+      return;
+    }
+
+    this.favorites.add(pokemon.id);
+  }
+
+  isFavorite(pokemon: Pokemon): boolean {
+    return this.favorites.has(pokemon.id);
+  }
+
+  getPokemonImage(pokemon: Pokemon): string | null {
+    return pokemon.sprites.front_default;
+  }
+
+  formatHeight(height: number): string {
+    return `${height / 10} m`;
+  }
+
+  formatWeight(weight: number): string {
+    return `${weight / 10} kg`;
   }
 }

@@ -1,4 +1,11 @@
 <main>
-  <app-header (search)="onSearch($event)"></app-header>
-  <app-pokemon-card [filterTerm]="searchTerm"></app-pokemon-card>
+  <app-header
+    (search)="onSearch($event)"
+    (toggleFavorites)="onToggleFavorites()"
+    [showFavoritesOnly]="showFavoritesOnly"
+  ></app-header>
+  <app-pokemon-card
+    [filterTerm]="searchTerm"
+    [showFavoritesOnly]="showFavoritesOnly"
+  ></app-pokemon-card>
 </main>
