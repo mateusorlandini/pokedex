@@ -16,7 +16,7 @@ export class PokemonCardComponent implements OnInit {
   @Input() filterTerm = '';
   @Input() showFavoritesOnly = false;
   selectedPokemon: Pokemon | null = null;
-  evolutionChain: Pokemon[] = [];
+  evolutionRows: Pokemon[][] = [];
   isEvolutionLoading = false;
   favorites = new Set<number>();
 
@@ -77,7 +77,7 @@ export class PokemonCardComponent implements OnInit {
 
   closePokemon(): void {
     this.selectedPokemon = null;
-    this.evolutionChain = [];
+    this.evolutionRows = [];
     this.isEvolutionLoading = false;
   }
 
@@ -100,6 +100,10 @@ export class PokemonCardComponent implements OnInit {
     return pokemon.sprites.front_default;
   }
 
+  getPokemonShinyImage(pokemon: Pokemon): string | null {
+    return pokemon.sprites.front_shiny;
+  }
+
   formatHeight(height: number): string {
     return `${height / 10} m`;
   }
@@ -110,7 +114,7 @@ export class PokemonCardComponent implements OnInit {
 
   private loadEvolutionChain(pokemon: Pokemon): void {
     this.isEvolutionLoading = true;
-    this.evolutionChain = [];
+    this.evolutionRows = [];
 
     this.pokemonService.getPokemonSpecies(pokemon.id).subscribe({
       next: (species) => {
@@ -122,15 +126,24 @@ export class PokemonCardComponent implements OnInit {
 
         this.pokemonService.getEvolutionChain(chainUrl).subscribe({
           next: (chain) => {
-            const names = this.extractEvolutionNames(chain.chain);
-            if (!names.length) {
+            const rows = this.extractEvolutionRows(chain.chain);
+            if (!rows.length) {
               this.isEvolutionLoading = false;
               return;
             }
 
-            forkJoin(names.map((name) => this.pokemonService.getPokemon(name))).subscribe({
+            const uniqueNames = Array.from(new Set(rows.flat().map((name) => name.toLowerCase())));
+
+            forkJoin(uniqueNames.map((name) => this.pokemonService.getPokemon(name))).subscribe({
               next: (pokemonList) => {
-                this.evolutionChain = pokemonList;
+                const pokemonByName = pokemonList.reduce<Record<string, Pokemon>>((acc, current) => {
+                  acc[current.name.toLowerCase()] = current;
+                  return acc;
+                }, {});
+
+                this.evolutionRows = rows.map((row) =>
+                  row.map((name) => pokemonByName[name.toLowerCase()]).filter(Boolean)
+                );
                 this.isEvolutionLoading = false;
               },
               error: () => {
@@ -149,18 +162,21 @@ export class PokemonCardComponent implements OnInit {
     });
   }
 
-  private extractEvolutionNames(node: EvolutionChainNode | null): string[] {
+  private extractEvolutionRows(node: EvolutionChainNode | null): string[][] {
     if (!node) {
       return [];
     }
 
-    const names: string[] = [];
-    const walk = (current: EvolutionChainNode): void => {
-      names.push(current.species.name);
-      current.evolves_to.forEach(walk);
+    const buildRows = (current: EvolutionChainNode): string[][] => {
+      if (!current.evolves_to.length) {
+        return [[current.species.name]];
+      }
+
+      return current.evolves_to
+        .flatMap((child) => buildRows(child))
+        .map((row) => [current.species.name, ...row]);
     };
 
-    walk(node);
-    return names;
+    return buildRows(node);
   }
 }

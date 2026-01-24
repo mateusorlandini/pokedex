@@ -255,6 +255,10 @@
   border: 1px solid rgba(11, 27, 43, 0.08);
 }
 
+.pokemon-dialog__evolution {
+  grid-column: 1 / -1;
+}
+
 .pokemon-dialog__section h4 {
   margin: 0 0 12px;
   font-size: 1rem;
@@ -293,9 +297,15 @@
 
 .pokemon-dialog__evolution-list {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
   align-items: center;
+  overflow: visible;
+}
+
+.pokemon-dialog__evolution-rows {
+  display: grid;
+  gap: 12px;
 }
 
 .pokemon-dialog__evolution-item {
@@ -304,6 +314,7 @@
   gap: 6px;
   text-transform: capitalize;
   font-size: 0.85rem;
+  flex: 0 0 auto;
 }
 
 .pokemon-dialog__evolution-item img {
@@ -318,6 +329,24 @@
 .pokemon-dialog__evolution-arrow {
   color: #6f7680;
   font-size: 1.1rem;
+  flex: 0 0 auto;
+}
+
+.pokemon-dialog__shiny-card {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-transform: capitalize;
+  font-size: 0.85rem;
+}
+
+.pokemon-dialog__shiny-card img {
+  width: 96px;
+  height: 96px;
+  image-rendering: pixelated;
+  background: #f3f6fb;
+  border-radius: 16px;
+  padding: 10px;
 }
 
 .pokemon-dialog__stats {

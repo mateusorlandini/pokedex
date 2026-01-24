@@ -11,7 +11,10 @@ class PokemonServiceMock {
       base_experience: 64,
       height: 7,
       weight: 69,
-      sprites: { front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png' },
+      sprites: {
+        front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
+        front_shiny: null,
+      },
       types: [],
       abilities: [],
       stats: [],
@@ -23,7 +26,10 @@ class PokemonServiceMock {
       base_experience: 62,
       height: 6,
       weight: 85,
-      sprites: { front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png' },
+      sprites: {
+        front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
+        front_shiny: null,
+      },
       types: [],
       abilities: [],
       stats: [],

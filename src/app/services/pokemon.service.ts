@@ -24,6 +24,7 @@ export interface PokemonType {
 
 export interface PokemonSprites {
   front_default: string | null;
+  front_shiny: string | null;
 }
 
 export interface PokemonAbility {

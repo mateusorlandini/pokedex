@@ -97,21 +97,25 @@
             @if (isEvolutionLoading) {
               <span class="pokemon-dialog__muted">Carregando evolucoes...</span>
             } @else {
-              @if (evolutionChain.length === 0) {
+              @if (evolutionRows.length === 0) {
                 <span class="pokemon-dialog__muted">Sem evolucoes disponiveis</span>
               } @else {
-                <div class="pokemon-dialog__evolution-list">
-                  @for (evolution of evolutionChain; track evolution.id) {
-                    <div class="pokemon-dialog__evolution-item">
-                      <img
-                        [src]="getPokemonImage(evolution)"
-                        [alt]="evolution.name"
-                      />
-                      <span>{{ evolution.name }}</span>
+                <div class="pokemon-dialog__evolution-rows">
+                  @for (row of evolutionRows; track $index) {
+                    <div class="pokemon-dialog__evolution-list">
+                      @for (evolution of row; track evolution.id) {
+                        <div class="pokemon-dialog__evolution-item">
+                          <img
+                            [src]="getPokemonImage(evolution)"
+                            [alt]="evolution.name"
+                          />
+                          <span>{{ evolution.name }}</span>
+                        </div>
+                        @if (!$last) {
+                          <span class="pokemon-dialog__evolution-arrow">→</span>
+                        }
+                      }
                     </div>
-                    @if (!$last) {
-                      <span class="pokemon-dialog__evolution-arrow">→</span>
-                    }
                   }
                 </div>
               }
@@ -127,6 +131,20 @@
                 </div>
               }
             </div>
+          </div>
+          <div class="pokemon-dialog__section pokemon-dialog__shiny">
+            <h4>Shiny</h4>
+            @if (getPokemonShinyImage(selectedPokemon)) {
+              <div class="pokemon-dialog__shiny-card">
+                <img
+                  [src]="getPokemonShinyImage(selectedPokemon)"
+                  [alt]="selectedPokemon.name + ' shiny'"
+                />
+                <span>{{ selectedPokemon.name }} (shiny)</span>
+              </div>
+            } @else {
+              <span class="pokemon-dialog__muted">Sem sprite shiny</span>
+            }
           </div>
           <div class="pokemon-dialog__section">
             <h4>Movimentos</h4>
