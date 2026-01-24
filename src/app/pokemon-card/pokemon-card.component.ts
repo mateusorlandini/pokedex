@@ -24,28 +24,31 @@ export class PokemonCardComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-    this.pokemonService.getPokemonList().subscribe((response) => {
-      if (!response.results.length) {
-        this.pokemonList = [];
-        this.isLoading = false;
-        return;
-      }
-
-      forkJoin(
-        response.results.map((item) =>
-          this.pokemonService.getPokemon(item.name)
-        )
-      ).subscribe(
-        (pokemon) => {
-          this.pokemonList = pokemon;
+    this.pokemonService.getPokemonList().subscribe({
+      next: (response) => {
+        if (!response.results.length) {
+          this.pokemonList = [];
           this.isLoading = false;
-        },
-        () => {
-          this.isLoading = false;
+          return;
         }
-      );
-    }, () => {
-      this.isLoading = false;
+
+        forkJoin(
+          response.results.map((item) =>
+            this.pokemonService.getPokemon(item.name)
+          )
+        ).subscribe({
+          next: (pokemon) => {
+            this.pokemonList = pokemon;
+            this.isLoading = false;
+          },
+          error: () => {
+            this.isLoading = false;
+          },
+        });
+      },
+      error: () => {
+        this.isLoading = false;
+      },
     });
   }
 
