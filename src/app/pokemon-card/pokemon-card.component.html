@@ -1,25 +1,33 @@
 <section class="pokemon-list">
-  <div class="pokeball-spinner" *ngIf="isLoading">
-    <div class="pokeball"></div>
-  </div>
-  <ul class="pokemon-grid" *ngIf="!isLoading">
-    <li class="pokemon-card" *ngFor="let pokemon of filteredPokemonList">
-      <div class="pokemon-image">
-        <img
-          [src]="pokemon.sprites.front_default"
-          [alt]="pokemon.name"
-          loading="lazy"
-        />
-      </div>
-      <div class="pokemon-info">
-        <span class="pokemon-id">#{{ pokemon.id }}</span>
-        <h3 class="pokemon-name">{{ pokemon.name }}</h3>
-        <div class="pokemon-types">
-          <span class="pokemon-type" *ngFor="let type of pokemon.types">
-            {{ type.type.name }}
-          </span>
-        </div>
-      </div>
-    </li>
-  </ul>
+  @if (isLoading) {
+    <div class="pokeball-spinner">
+      <div class="pokeball"></div>
+    </div>
+  }
+  @if (!isLoading) {
+    <ul class="pokemon-grid">
+      @for (pokemon of filteredPokemonList; track pokemon.id) {
+        <li class="pokemon-card">
+          <div class="pokemon-image">
+            <img
+              [src]="pokemon.sprites.front_default"
+              [alt]="pokemon.name"
+              loading="lazy"
+            />
+          </div>
+          <div class="pokemon-info">
+            <span class="pokemon-id">#{{ pokemon.id }}</span>
+            <h3 class="pokemon-name">{{ pokemon.name }}</h3>
+            <div class="pokemon-types">
+              @for (type of pokemon.types; track type.type.name) {
+                <span class="pokemon-type">
+                  {{ type.type.name }}
+                </span>
+              }
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
 </section>
