@@ -1,0 +1,208 @@
+@if (isLoading()) {
+  <div class="details-loading">
+    <div class="details-loading__spinner"></div>
+    <span>Loading Pokémon...</span>
+  </div>
+} @else if (hasError()) {
+  <div class="details-error">
+    <span class="details-error__icon">⚠️</span>
+    <h2>Pokémon not found</h2>
+    <p>Could not load data for this Pokémon.</p>
+    <button class="details-error__btn" (click)="back()">Go Back</button>
+  </div>
+} @else {
+  @if (pokemon(); as p) {
+    <article class="details" [style.--type-color]="primaryTypeColor">
+
+      <div class="details__hero">
+        <div class="details__hero-bg"></div>
+
+        <nav class="details__nav">
+          <button class="details__back-btn" type="button" (click)="back()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            <span>Back</span>
+          </button>
+
+          <button
+            class="details__fav-btn"
+            [class.details__fav-btn--active]="favoritesService.isFavorite(p.id)"
+            type="button"
+            (click)="toggleFavorite()"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </nav>
+
+        <div class="details__hero-content">
+          <div class="details__hero-info">
+            <span class="details__number">#{{ p.id | number: '3.0-0' }}</span>
+            <h1 class="details__name">{{ p.name }}</h1>
+            @if (category()) {
+              <span class="details__category">{{ category() }}</span>
+            }
+            <div class="details__types">
+              @for (type of p.types; track type.type.name) {
+                <app-type-badge [typeName]="type.type.name" />
+              }
+            </div>
+          </div>
+
+          <div class="details__hero-image">
+            <div class="details__image-glow"></div>
+            <img
+              [src]="pokemonService.getArtwork(p)"
+              [alt]="p.name"
+              class="details__image"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="details__body">
+
+        <nav class="details__tabs">
+          <button
+            class="details__tab"
+            [class.details__tab--active]="activeTab() === 'about'"
+            (click)="setTab('about')"
+          >About</button>
+          <button
+            class="details__tab"
+            [class.details__tab--active]="activeTab() === 'stats'"
+            (click)="setTab('stats')"
+          >Stats</button>
+          <button
+            class="details__tab"
+            [class.details__tab--active]="activeTab() === 'moves'"
+            (click)="setTab('moves')"
+          >Moves</button>
+        </nav>
+
+        @if (activeTab() === 'about') {
+          <div class="details__section details__about">
+            @if (description()) {
+              <p class="details__description">{{ description() }}</p>
+            }
+
+            <div class="details__info-grid">
+              <div class="details__info-card">
+                <span class="details__info-label">Height</span>
+                <span class="details__info-value">{{ formatHeight(p.height) }}</span>
+              </div>
+              <div class="details__info-card">
+                <span class="details__info-label">Weight</span>
+                <span class="details__info-value">{{ formatWeight(p.weight) }}</span>
+              </div>
+              <div class="details__info-card">
+                <span class="details__info-label">Base XP</span>
+                <span class="details__info-value">{{ p.base_experience }}</span>
+              </div>
+            </div>
+
+            <div class="details__block">
+              <h3 class="details__block-title">Abilities</h3>
+              <div class="details__chips">
+                @for (ability of p.abilities; track ability.ability.name) {
+                  <span class="details__chip" [class.details__chip--hidden]="ability.is_hidden">
+                    {{ ability.ability.name }}
+                    @if (ability.is_hidden) {
+                      <small>(hidden)</small>
+                    }
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="details__block">
+              <h3 class="details__block-title">Evolution Chain</h3>
+              @if (isEvolutionLoading()) {
+                <div class="details__evo-loading">Loading evolutions...</div>
+              } @else if (evolutionChain().length === 0) {
+                <p class="details__muted">No evolutions available.</p>
+              } @else {
+                @for (row of evolutionChain(); track $index) {
+                  <div class="details__evo-row">
+                    @for (step of row; track step.pokemon.id) {
+                      <button
+                        class="details__evo-item"
+                        [class.details__evo-item--current]="step.pokemon.id === p.id"
+                        (click)="goToEvolution(step.pokemon.id)"
+                        type="button"
+                      >
+                        <div class="details__evo-img-wrap">
+                          <img
+                            [src]="pokemonService.getArtwork(step.pokemon)"
+                            [alt]="step.pokemon.name"
+                          />
+                        </div>
+                        <span class="details__evo-name">{{ step.pokemon.name }}</span>
+                        <span class="details__evo-id">#{{ step.pokemon.id | number: '3.0-0' }}</span>
+                      </button>
+                      @if (!$last) {
+                        <div class="details__evo-arrow">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            <polyline points="9 6 15 12 9 18"/>
+                          </svg>
+                          @if (row[$index + 1].minLevel) {
+                            <small>Lv. {{ row[$index + 1].minLevel }}</small>
+                          }
+                        </div>
+                      }
+                    }
+                  </div>
+                }
+              }
+            </div>
+
+            @if (pokemonService.getShinyArtwork(p)) {
+              <div class="details__block">
+                <h3 class="details__block-title">Shiny Version</h3>
+                <div class="details__shiny">
+                  <img
+                    [src]="pokemonService.getShinyArtwork(p)"
+                    [alt]="p.name + ' shiny'"
+                    class="details__shiny-img"
+                  />
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (activeTab() === 'stats') {
+          <div class="details__section details__stats-section">
+            <div class="details__stats-list">
+              @for (stat of p.stats; track stat.stat.name) {
+                <app-stat-bar [statName]="stat.stat.name" [value]="stat.base_stat" />
+              }
+            </div>
+            <div class="details__stats-total">
+              <span class="details__stats-total-label">Total</span>
+              <span class="details__stats-total-value">{{ totalStats }}</span>
+            </div>
+          </div>
+        }
+
+        @if (activeTab() === 'moves') {
+          <div class="details__section details__moves-section">
+            <div class="details__moves-grid">
+              @for (move of p.moves.slice(0, 40); track move.move.name) {
+                <span class="details__move-chip">{{ move.move.name }}</span>
+              }
+            </div>
+            @if (p.moves.length > 40) {
+              <p class="details__muted" style="margin-top: 16px; text-align: center;">
+                + {{ p.moves.length - 40 }} more moves
+              </p>
+            }
+          </div>
+        }
+
+      </div>
+    </article>
+  }
+}

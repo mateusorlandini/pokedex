@@ -1,0 +1,84 @@
+<div class="home">
+  <app-pokedex-header
+    [totalCount]="allPokemon().length"
+    [visibleCount]="filteredPokemon().length"
+    [showFavoritesOnly]="showFavoritesOnly()"
+    (search)="onSearch($event)"
+    (toggleFavorites)="onToggleFavorites()"
+  />
+
+  <section class="home__filters">
+    <app-type-filter
+      [selectedType]="selectedType()"
+      (typeChange)="onTypeFilter($event)"
+    />
+
+    <div class="home__sort">
+      <label class="home__sort-label" for="sort-select">Sort by</label>
+      <select
+        id="sort-select"
+        class="home__sort-select"
+        [value]="sortOption()"
+        (change)="onSort($event)"
+      >
+        <option value="id-asc">Number ↑</option>
+        <option value="id-desc">Number ↓</option>
+        <option value="name-asc">Name A-Z</option>
+        <option value="name-desc">Name Z-A</option>
+      </select>
+    </div>
+  </section>
+
+  <div class="home__count" *ngIf="!isLoading()">
+    <span>{{ filteredPokemon().length }} Pokémon found</span>
+  </div>
+
+  @if (isLoading()) {
+    <div class="home__grid">
+      @for (s of skeletons; track $index) {
+        <app-skeleton-card />
+      }
+    </div>
+  } @else if (hasError()) {
+    <div class="home__state">
+      <div class="home__state-icon">⚠️</div>
+      <h2>Something went wrong</h2>
+      <p>Could not load Pokémon data. Please try again.</p>
+      <button class="home__state-btn" (click)="ngOnInit()">Retry</button>
+    </div>
+  } @else if (filteredPokemon().length === 0) {
+    <div class="home__state">
+      <div class="home__state-icon">🔍</div>
+      <h2>No Pokémon found</h2>
+      <p>Try adjusting your search or filters.</p>
+    </div>
+  } @else {
+    <div class="home__grid">
+      @for (pokemon of paginatedPokemon(); track pokemon.id) {
+        <app-pokemon-card [pokemon]="pokemon" />
+      }
+    </div>
+
+    @if (hasMore()) {
+      <div class="home__load-more">
+        <button class="home__load-more-btn" (click)="loadMore()">
+          Load more Pokémon
+          <span class="home__load-more-count">
+            ({{ paginatedPokemon().length }}/{{ filteredPokemon().length }})
+          </span>
+        </button>
+      </div>
+    }
+  }
+
+  <button
+    class="home__scroll-top"
+    type="button"
+    (click)="scrollToTop()"
+    aria-label="Scroll to top"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
+</div>

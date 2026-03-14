@@ -1,11 +1,4 @@
-<main>
-  <app-header
-    (search)="onSearch($event)"
-    (toggleFavorites)="onToggleFavorites()"
-    [showFavoritesOnly]="showFavoritesOnly"
-  ></app-header>
-  <app-pokemon-card
-    [filterTerm]="searchTerm"
-    [showFavoritesOnly]="showFavoritesOnly"
-  ></app-pokemon-card>
+<main class="app-shell">
+  <router-outlet></router-outlet>
 </main>
+<app-toast-container />
