@@ -12,4 +12,14 @@ import {HeaderComponent} from "./header/header.component";
 })
 export class AppComponent {
   title = 'Pokedex';
+  searchTerm = '';
+  showFavoritesOnly = false;
+
+  onSearch(value: string): void {
+    this.searchTerm = value;
+  }
+
+  onToggleFavorites(): void {
+    this.showFavoritesOnly = !this.showFavoritesOnly;
+  }
 }

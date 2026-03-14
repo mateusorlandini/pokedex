@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-header',
@@ -8,5 +8,15 @@ import { Component } from '@angular/core';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
+  @Input() showFavoritesOnly = false;
+  @Output() search = new EventEmitter<string>();
+  @Output() toggleFavorites = new EventEmitter<void>();
 
+  onSearch(value: string): void {
+    this.search.emit(value);
+  }
+
+  onToggleFavorites(): void {
+    this.toggleFavorites.emit();
+  }
 }
