@@ -1,12 +1,16 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable, map, shareReplay } from 'rxjs';
 
 import {
   Pokemon,
   PokemonListResponse,
   PokemonSpeciesResponse,
   EvolutionChainResponse,
+  GenerationListResponse,
+  GenerationResponse,
+  GenerationInfo,
+  GENERATION_LABELS,
 } from '../models/pokemon.model';
 
 @Injectable({ providedIn: 'root' })
@@ -70,5 +74,38 @@ export class PokemonService {
       pokemon.sprites.front_shiny ??
       ''
     );
+  }
+
+  getGenerations(): Observable<GenerationInfo[]> {
+    return this.http
+      .get<GenerationListResponse>(`${this.baseUrl}/generation`)
+      .pipe(
+        map((res) =>
+          res.results
+            .map((g) => {
+              const id = this.extractIdFromUrl(g.url);
+              return {
+                id,
+                name: g.name,
+                region: GENERATION_LABELS[id] ?? g.name,
+                label: `Gen ${id} - ${GENERATION_LABELS[id] ?? g.name}`,
+                speciesNames: [],
+              };
+            })
+            .sort((a, b) => a.id - b.id)
+        ),
+        shareReplay(1)
+      );
+  }
+
+  private extractIdFromUrl(url: string): number {
+    const parts = url.replace(/\/$/, '').split('/');
+    return parseInt(parts[parts.length - 1], 10);
+  }
+
+  getGeneration(id: number): Observable<GenerationResponse> {
+    return this.http
+      .get<GenerationResponse>(`${this.baseUrl}/generation/${id}`)
+      .pipe(shareReplay(1));
   }
 }

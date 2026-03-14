@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of, catchError } from 'rxjs';
 
 import { PokedexHeaderComponent } from '../../components/header/header.component';
 import { TypeFilterComponent } from '../../components/type-filter/type-filter.component';
@@ -8,7 +8,7 @@ import { PokemonCardComponent } from '../../../../shared/components/pokemon-card
 import { SkeletonCardComponent } from '../../../../shared/components/skeleton-card/skeleton-card.component';
 import { PokemonService } from '../../../../core/services/pokemon.service';
 import { FavoritesService } from '../../../../core/services/favorites.service';
-import { Pokemon } from '../../../../core/models/pokemon.model';
+import { Pokemon, GenerationInfo } from '../../../../core/models/pokemon.model';
 
 type SortOption = 'id-asc' | 'id-desc' | 'name-asc' | 'name-desc';
 
@@ -29,7 +29,10 @@ export class HomePage implements OnInit {
   private readonly pokemonService = inject(PokemonService);
   private readonly favoritesService = inject(FavoritesService);
 
+  readonly generations = signal<GenerationInfo[]>([]);
+  readonly selectedGeneration = signal<number>(1);
   readonly allPokemon = signal<Pokemon[]>([]);
+  readonly isLoadingGenerations = signal(true);
   readonly isLoading = signal(true);
   readonly hasError = signal(false);
   readonly searchTerm = signal('');
@@ -38,6 +41,8 @@ export class HomePage implements OnInit {
   readonly sortOption = signal<SortOption>('id-asc');
   readonly pageSize = 36;
   readonly currentPage = signal(1);
+
+  private readonly pokemonByGeneration = new Map<number, Pokemon[]>();
 
   readonly skeletons = Array(12).fill(0);
 
@@ -94,8 +99,20 @@ export class HomePage implements OnInit {
 
   readonly hasMore = computed(() => this.currentPage() < this.totalPages());
 
+  readonly currentGenerationLabel = computed(() => {
+    const gen = this.generations().find((g) => g.id === this.selectedGeneration());
+    return gen?.label ?? '';
+  });
+
   ngOnInit(): void {
-    this.loadPokemon();
+    this.loadGenerations();
+  }
+
+  onSelectGeneration(genId: number): void {
+    if (genId === this.selectedGeneration()) return;
+    this.selectedGeneration.set(genId);
+    this.currentPage.set(1);
+    this.loadPokemonForGeneration(genId);
   }
 
   onSearch(term: string): void {
@@ -126,23 +143,59 @@ export class HomePage implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  private loadPokemon(): void {
+  private loadGenerations(): void {
+    this.isLoadingGenerations.set(true);
+    this.hasError.set(false);
+
+    this.pokemonService.getGenerations().subscribe({
+      next: (gens) => {
+        this.generations.set(gens);
+        this.isLoadingGenerations.set(false);
+        this.loadPokemonForGeneration(1);
+      },
+      error: () => {
+        this.hasError.set(true);
+        this.isLoadingGenerations.set(false);
+        this.isLoading.set(false);
+      },
+    });
+  }
+
+  private loadPokemonForGeneration(genId: number): void {
+    if (this.pokemonByGeneration.has(genId)) {
+      this.allPokemon.set(this.pokemonByGeneration.get(genId)!);
+      return;
+    }
+
     this.isLoading.set(true);
     this.hasError.set(false);
 
-    this.pokemonService.getPokemonList(151, 0).subscribe({
-      next: (response) => {
-        if (!response.results.length) {
+    this.pokemonService.getGeneration(genId).subscribe({
+      next: (genResponse) => {
+        const speciesNames = genResponse.pokemon_species.map((s) => s.name);
+
+        if (!speciesNames.length) {
           this.allPokemon.set([]);
+          this.pokemonByGeneration.set(genId, []);
           this.isLoading.set(false);
           return;
         }
 
         forkJoin(
-          response.results.map((item) => this.pokemonService.getPokemon(item.name))
+          speciesNames.map((name) =>
+            this.pokemonService.getPokemon(name).pipe(
+              catchError(() => of(null))
+            )
+          )
         ).subscribe({
           next: (pokemonList) => {
-            this.allPokemon.set(pokemonList.sort((a, b) => a.id - b.id));
+            const sorted = pokemonList
+              .filter((p): p is Pokemon => p !== null)
+              .sort((a, b) => a.id - b.id);
+            this.pokemonByGeneration.set(genId, sorted);
+            if (this.selectedGeneration() === genId) {
+              this.allPokemon.set(sorted);
+            }
             this.isLoading.set(false);
           },
           error: () => {

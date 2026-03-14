@@ -7,6 +7,24 @@
     (toggleFavorites)="onToggleFavorites()"
   />
 
+  @if (!isLoadingGenerations() && generations().length > 0) {
+    <nav class="home__generations" aria-label="Generations">
+      <div class="home__generations-scroll">
+        @for (gen of generations(); track gen.id) {
+          <button
+            class="home__gen-btn"
+            [class.home__gen-btn--active]="selectedGeneration() === gen.id"
+            (click)="onSelectGeneration(gen.id)"
+            [attr.aria-pressed]="selectedGeneration() === gen.id"
+          >
+            <span class="home__gen-num">{{ gen.id }}</span>
+            <span class="home__gen-region">{{ gen.region }}</span>
+          </button>
+        }
+      </div>
+    </nav>
+  }
+
   <section class="home__filters">
     <app-type-filter
       [selectedType]="selectedType()"
@@ -30,7 +48,7 @@
   </section>
 
   <div class="home__count" *ngIf="!isLoading()">
-    <span>{{ filteredPokemon().length }} Pokémon found</span>
+    <span>{{ currentGenerationLabel() }} — {{ filteredPokemon().length }} Pokémon found</span>
   </div>
 
   @if (isLoading()) {

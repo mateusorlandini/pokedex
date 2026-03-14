@@ -72,6 +72,38 @@ export interface PokemonSpeciesResponse {
   }>;
 }
 
+export interface GenerationListResponse {
+  count: number;
+  results: { name: string; url: string }[];
+}
+
+export interface GenerationResponse {
+  id: number;
+  name: string;
+  main_region: { name: string; url: string };
+  pokemon_species: { name: string; url: string }[];
+}
+
+export interface GenerationInfo {
+  id: number;
+  name: string;
+  region: string;
+  label: string;
+  speciesNames: string[];
+}
+
+export const GENERATION_LABELS: Record<number, string> = {
+  1: 'Kanto',
+  2: 'Johto',
+  3: 'Hoenn',
+  4: 'Sinnoh',
+  5: 'Unova',
+  6: 'Kalos',
+  7: 'Alola',
+  8: 'Galar',
+  9: 'Paldea',
+};
+
 export interface EvolutionChainNode {
   species: {
     name: string;
