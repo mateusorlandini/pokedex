@@ -1,25 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {PokemonCardComponent} from "./pokemon-card/pokemon-card.component";
-import {HeaderComponent} from "./header/header.component";
+import { ToastContainerComponent } from './shared/components/toast-container/toast-container.component';
+import { ThemeService } from './core/services/theme.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [PokemonCardComponent, HeaderComponent],
+  imports: [RouterOutlet, ToastContainerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'Pokedex';
-  searchTerm = '';
-  showFavoritesOnly = false;
-
-  onSearch(value: string): void {
-    this.searchTerm = value;
-  }
-
-  onToggleFavorites(): void {
-    this.showFavoritesOnly = !this.showFavoritesOnly;
-  }
+  private readonly themeService = inject(ThemeService);
 }
