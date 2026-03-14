@@ -78,6 +78,54 @@ export class PokemonCardComponent implements OnInit {
     this.loadEvolutionChain(pokemon);
   }
 
+  openPreviousPokemon(): void {
+    const list = this.filteredPokemonList;
+    if (!this.selectedPokemon || list.length < 2) {
+      return;
+    }
+
+    const index = list.findIndex((pokemon) => pokemon.id === this.selectedPokemon?.id);
+    if (index <= 0) {
+      return;
+    }
+
+    this.openPokemon(list[index - 1]);
+  }
+
+  openNextPokemon(): void {
+    const list = this.filteredPokemonList;
+    if (!this.selectedPokemon || list.length < 2) {
+      return;
+    }
+
+    const index = list.findIndex((pokemon) => pokemon.id === this.selectedPokemon?.id);
+    if (index === -1 || index >= list.length - 1) {
+      return;
+    }
+
+    this.openPokemon(list[index + 1]);
+  }
+
+  canGoPrevious(): boolean {
+    const list = this.filteredPokemonList;
+    if (!this.selectedPokemon || list.length < 2) {
+      return false;
+    }
+
+    const index = list.findIndex((pokemon) => pokemon.id === this.selectedPokemon?.id);
+    return index > 0;
+  }
+
+  canGoNext(): boolean {
+    const list = this.filteredPokemonList;
+    if (!this.selectedPokemon || list.length < 2) {
+      return false;
+    }
+
+    const index = list.findIndex((pokemon) => pokemon.id === this.selectedPokemon?.id);
+    return index !== -1 && index < list.length - 1;
+  }
+
   closePokemon(): void {
     this.selectedPokemon = null;
     this.evolutionRows = [];
@@ -113,6 +161,10 @@ export class PokemonCardComponent implements OnInit {
 
   formatWeight(weight: number): string {
     return `${weight / 10} kg`;
+  }
+
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   private loadEvolutionChain(pokemon: Pokemon): void {

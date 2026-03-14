@@ -46,6 +46,24 @@
   @if (selectedPokemon) {
     <div class="pokemon-dialog-overlay" (click)="closePokemon()">
       <div class="pokemon-dialog" (click)="$event.stopPropagation()">
+        <button
+          class="pokemon-dialog__nav pokemon-dialog__nav--left"
+          type="button"
+          (click)="openPreviousPokemon()"
+          [disabled]="!canGoPrevious()"
+          aria-label="Pokemon anterior"
+        >
+          &lt;
+        </button>
+        <button
+          class="pokemon-dialog__nav pokemon-dialog__nav--right"
+          type="button"
+          (click)="openNextPokemon()"
+          [disabled]="!canGoNext()"
+          aria-label="Proximo pokemon"
+        >
+          &gt;
+        </button>
         <button class="pokemon-dialog__close" type="button" (click)="closePokemon()">
           Fechar
         </button>
@@ -158,4 +176,7 @@
       </div>
     </div>
   }
+  <button class="scroll-top" type="button" (click)="scrollToTop()">
+    Voltar ao topo
+  </button>
 </section>

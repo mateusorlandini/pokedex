@@ -75,6 +75,28 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.scroll-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  border: none;
+  background: #1c2837;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 12px 24px rgba(12, 18, 28, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 900;
+}
+
+.scroll-top:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(12, 18, 28, 0.25);
+}
+
 .pokemon-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 16px 28px rgba(0, 0, 0, 0.12);
@@ -196,6 +218,37 @@
   cursor: pointer;
   font-size: 0.85rem;
   letter-spacing: 0.03em;
+}
+
+.pokemon-dialog__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: #1c2837;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 20px rgba(12, 18, 28, 0.2);
+  z-index: 1001;
+}
+
+.pokemon-dialog__nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pokemon-dialog__nav--left {
+  left: 16px;
+}
+
+.pokemon-dialog__nav--right {
+  right: 16px;
 }
 
 .pokemon-dialog__header {
