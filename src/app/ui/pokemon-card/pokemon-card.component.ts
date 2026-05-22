@@ -206,7 +206,7 @@ export class PokemonCardComponent {
   onToggleFavorite(event: MouseEvent): void {
     event.stopPropagation();
     const wasFavorite = this.favoritesService.isFavorite(this.pokemon.id);
-    this.favoritesService.toggle(this.pokemon.id);
+    this.favoritesService.toggle(this.pokemon);
 
     this.toastService.show(
       wasFavorite

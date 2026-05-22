@@ -118,8 +118,8 @@ export class RegisterPage {
 
     this.authService.register(name, email, password).subscribe({
       next: () => {
-        this.toastService.show('Account created! Welcome, ' + name, 'success');
-        this.router.navigate(['/login']);
+        this.toastService.show('Account created! Check your email to verify your account.', 'success');
+        this.router.navigate(['/verify-email']);
       },
       error: (err) => {
         const code: string = err?.code ?? '';

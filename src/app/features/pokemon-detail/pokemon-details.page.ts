@@ -83,7 +83,7 @@ export class PokemonDetailsPage implements OnInit {
     const p = this.pokemon();
     if (!p) return;
     const wasFav = this.favoritesService.isFavorite(p.id);
-    this.favoritesService.toggle(p.id);
+    this.favoritesService.toggle(p);
     this.toastService.show(
       wasFav ? `${p.name} removido dos favoritos` : `${p.name} adicionado aos favoritos!`,
       wasFav ? 'info' : 'success'

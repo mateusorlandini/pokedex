@@ -1,0 +1,36 @@
+<div class="favorites-page">
+  <header class="favorites-header">
+    <button type="button" class="favorites-back" (click)="goToPokedex()" aria-label="Back to Pokédex">
+      ← Pokédex
+    </button>
+    <h1 class="favorites-title">My Favorites</h1>
+    <p class="favorites-count">
+      {{ favoritesService.count() }} {{ favoritesService.count() === 1 ? 'Pokémon' : 'Pokémon' }}
+    </p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="favorites-grid">
+      @for (s of skeletons; track $index) {
+        <app-skeleton-card />
+      }
+    </div>
+  } @else if (displayedPokemon().length === 0) {
+    <div class="favorites-empty">
+      <p class="favorites-empty__icon" aria-hidden="true">🌟</p>
+      <h2 class="favorites-empty__title">No favorites yet</h2>
+      <p class="favorites-empty__subtitle">
+        Head back to the Pokédex and star the Pokémon you love.
+      </p>
+      <button type="button" class="favorites-empty__cta" (click)="goToPokedex()">
+        Browse Pokédex
+      </button>
+    </div>
+  } @else {
+    <div class="favorites-grid">
+      @for (pokemon of displayedPokemon(); track pokemon.id) {
+        <app-pokemon-card [pokemon]="pokemon" />
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,41 @@
+<section class="verify-shell">
+  <div class="verify-card">
+    <p class="verify-brand">Pokédex</p>
+    <div class="verify-icon" aria-hidden="true">✉️</div>
+    <h1 class="verify-title">Check your inbox</h1>
+    <p class="verify-subtitle">
+      We sent a verification link to
+      @if (userEmail) {
+        <strong>{{ userEmail }}</strong>
+      } @else {
+        your email address
+      }.
+      Click the link to verify your account.
+    </p>
+
+    <div class="verify-actions">
+      <button
+        type="button"
+        class="verify-btn verify-btn--primary"
+        [disabled]="isChecking()"
+        (click)="onContinue()"
+      >
+        {{ isChecking() ? 'Checking…' : "I've verified my email" }}
+      </button>
+
+      <button
+        type="button"
+        class="verify-btn verify-btn--ghost"
+        [disabled]="isResending()"
+        (click)="onResend()"
+      >
+        {{ isResending() ? 'Sending…' : 'Resend verification email' }}
+      </button>
+    </div>
+
+    <p class="verify-footer">
+      Wrong account?
+      <button type="button" class="verify-link" (click)="onBackToLogin()">Back to login</button>
+    </p>
+  </div>
+</section>

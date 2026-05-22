@@ -1,48 +1,113 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  serverTimestamp,
+  setDoc,
+} from 'firebase/firestore';
 
-const STORAGE_KEY = 'pokedex_favorites';
+import { Pokemon } from '../../core/models/pokemon.model';
+import { AuthService } from '../../core/services/auth.service';
+import { firebaseFirestore } from '../../core/services/firebase.config';
+
+export interface FavoriteRecord {
+  pokemonId: number;
+  name: string;
+  imageUrl: string;
+  types: string[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class FavoritesService {
-  private readonly _favorites = signal<Set<number>>(this.loadFromStorage());
+  private readonly authService = inject(AuthService);
+  private readonly _favorites = signal<FavoriteRecord[]>([]);
+  private _unsubscribeSnapshot: (() => void) | null = null;
 
-  readonly favorites = computed(() => this._favorites());
-  readonly count = computed(() => this._favorites().size);
+  readonly favorites = this._favorites.asReadonly();
+  readonly count = computed(() => this._favorites().length);
+  private readonly _ids = computed(() => new Set(this._favorites().map((f) => f.pokemonId)));
 
-  toggle(id: number): void {
-    const current = new Set(this._favorites());
+  constructor() {
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user === undefined) return; // auth not yet resolved
 
-    if (current.has(id)) {
-      current.delete(id);
-    } else {
-      current.add(id);
-    }
-
-    this._favorites.set(current);
-    this.saveToStorage(current);
+      if (user) {
+        this.subscribeToFirestore(user.uid);
+      } else {
+        this.clearAndUnsubscribe();
+      }
+    });
   }
 
   isFavorite(id: number): boolean {
-    return this._favorites().has(id);
+    return this._ids().has(id);
   }
 
-  private loadFromStorage(): Set<number> {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        return new Set(JSON.parse(raw));
-      }
-    } catch {
-      // ignore
+  toggle(pokemon: Pokemon): void {
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    const isFav = this._ids().has(pokemon.id);
+
+    // Optimistic local update
+    if (isFav) {
+      this._favorites.update((list) => list.filter((f) => f.pokemonId !== pokemon.id));
+    } else {
+      this._favorites.update((list) => [
+        ...list,
+        {
+          pokemonId: pokemon.id,
+          name: pokemon.name,
+          imageUrl:
+            pokemon.sprites.other?.['official-artwork']?.front_default ??
+            pokemon.sprites.front_default ??
+            '',
+          types: pokemon.types.map((t) => t.type.name),
+        },
+      ]);
     }
-    return new Set();
+
+    const docRef = doc(firebaseFirestore, 'users', user.uid, 'favorites', String(pokemon.id));
+
+    if (isFav) {
+      deleteDoc(docRef);
+    } else {
+      setDoc(docRef, {
+        pokemonId: pokemon.id,
+        name: pokemon.name,
+        imageUrl:
+          pokemon.sprites.other?.['official-artwork']?.front_default ??
+          pokemon.sprites.front_default ??
+          '',
+        types: pokemon.types.map((t) => t.type.name),
+        createdAt: serverTimestamp(),
+      });
+    }
   }
 
-  private saveToStorage(favorites: Set<number>): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([...favorites]));
-    } catch {
-      // ignore
-    }
+  private subscribeToFirestore(uid: string): void {
+    this._unsubscribeSnapshot?.();
+    const favRef = collection(firebaseFirestore, 'users', uid, 'favorites');
+    this._unsubscribeSnapshot = onSnapshot(favRef, (snapshot) => {
+      const records: FavoriteRecord[] = snapshot.docs.map((d) => {
+        const data = d.data();
+        return {
+          pokemonId: data['pokemonId'] as number,
+          name: data['name'] as string,
+          imageUrl: data['imageUrl'] as string,
+          types: data['types'] as string[],
+        };
+      });
+      this._favorites.set(records);
+    });
+  }
+
+  private clearAndUnsubscribe(): void {
+    this._unsubscribeSnapshot?.();
+    this._unsubscribeSnapshot = null;
+    this._favorites.set([]);
   }
 }

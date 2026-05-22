@@ -15,6 +15,8 @@ function firebaseErrorMessage(code: string): string {
       return 'Incorrect password. Please try again.';
     case 'auth/too-many-requests':
       return 'Too many attempts. Please try again later.';
+    case 'auth/email-not-verified':
+      return 'Please verify your email before logging in. Check your inbox.';
     default:
       return 'Login failed. Please try again.';
   }
@@ -73,8 +75,12 @@ export class LoginPage {
         this.router.navigate(['/pokemon']);
       },
       error: (err) => {
-        const message = firebaseErrorMessage(err?.code ?? '');
-        this.toastService.show(message, 'error');
+        const code: string = err?.code ?? '';
+        if (code === 'auth/email-not-verified') {
+          this.router.navigate(['/verify-email']);
+        } else {
+          this.toastService.show(firebaseErrorMessage(code), 'error');
+        }
         this.isSubmitting.set(false);
       },
     });
@@ -82,5 +88,9 @@ export class LoginPage {
 
   onRegister(): void {
     this.router.navigate(['/register']);
+  }
+
+  onForgotPassword(): void {
+    this.router.navigate(['/reset-password']);
   }
 }

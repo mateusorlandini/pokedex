@@ -6,7 +6,7 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'login',
+    redirectTo: 'pokemon',
   },
   {
     path: 'login',
@@ -17,6 +17,16 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () =>
       import('./features/auth/register/register.page').then((m) => m.RegisterPage),
+  },
+  {
+    path: 'verify-email',
+    loadComponent: () =>
+      import('./features/auth/verify-email/verify-email.page').then((m) => m.VerifyEmailPage),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.page').then((m) => m.ResetPasswordPage),
   },
   {
     path: 'pokemon',
@@ -31,6 +41,12 @@ export const routes: Routes = [
       import('./features/pokemon-detail/pokemon-details.page').then(
         (m) => m.PokemonDetailsPage
       ),
+  },
+  {
+    path: 'favorites',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/favorites/favorites.page').then((m) => m.FavoritesPage),
   },
   {
     path: '**',
