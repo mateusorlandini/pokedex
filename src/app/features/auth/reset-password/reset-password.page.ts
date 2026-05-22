@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { PokeballSpinnerComponent } from '../../../ui/loaders/pokeball-spinner.component';
 
 @Component({
   selector: 'app-reset-password-page',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, PokeballSpinnerComponent],
   templateUrl: './reset-password.page.html',
   styleUrl: './reset-password.page.scss',
 })

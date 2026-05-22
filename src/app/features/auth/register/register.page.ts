@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { PokeballSpinnerComponent } from '../../../ui/loaders/pokeball-spinner.component';
 
 function passwordStrengthValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -37,7 +38,7 @@ type RegisterField = 'name' | 'email' | 'password' | 'confirmPassword';
 @Component({
     selector: 'app-register-page',
     standalone: true,
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, PokeballSpinnerComponent],
     templateUrl: './register.page.html',
     styleUrl: './register.page.scss'
 })

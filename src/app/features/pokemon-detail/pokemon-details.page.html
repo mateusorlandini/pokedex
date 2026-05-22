@@ -1,6 +1,6 @@
 @if (isLoading()) {
   <div class="details-loading">
-    <div class="details-loading__spinner"></div>
+    <app-pokeball-spinner size="lg" />
     <span>Loading Pokémon...</span>
   </div>
 } @else if (hasError()) {
@@ -120,7 +120,10 @@
             <div class="details__block">
               <h3 class="details__block-title">Evolution Chain</h3>
               @if (isEvolutionLoading()) {
-                <div class="details__evo-loading">Loading evolutions...</div>
+                <div class="details__evo-loading">
+                  <app-pokeball-spinner size="sm" />
+                  <span>Loading evolutions...</span>
+                </div>
               } @else if (evolutionChain().length === 0) {
                 <p class="details__muted">No evolutions available.</p>
               } @else {

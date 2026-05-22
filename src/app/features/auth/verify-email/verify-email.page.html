@@ -20,7 +20,12 @@
         [disabled]="isChecking()"
         (click)="onContinue()"
       >
-        {{ isChecking() ? 'Checking…' : "I've verified my email" }}
+        @if (isChecking()) {
+          <app-pokeball-spinner size="sm" />
+          Checking…
+        } @else {
+          I've verified my email
+        }
       </button>
 
       <button
@@ -29,7 +34,12 @@
         [disabled]="isResending()"
         (click)="onResend()"
       >
-        {{ isResending() ? 'Sending…' : 'Resend verification email' }}
+        @if (isResending()) {
+          <app-pokeball-spinner size="sm" />
+          Sending…
+        } @else {
+          Resend verification email
+        }
       </button>
     </div>
 

@@ -7,7 +7,12 @@
     (toggleFavorites)="onToggleFavorites()"
     />
 
-  @if (!isLoadingGenerations() && generations().length > 0) {
+  @if (isLoadingGenerations()) {
+    <div class="home__generations-loading">
+      <app-pokeball-spinner size="sm" />
+      <span>Loading generations…</span>
+    </div>
+  } @else if (generations().length > 0) {
     <nav class="home__generations" aria-label="Generations">
       <div class="home__generations-scroll">
         @for (gen of generations(); track gen.id) {

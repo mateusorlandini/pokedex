@@ -7,12 +7,12 @@ import { PokemonService } from '../../data-access/pokeapi/pokemon.service';
 import { Pokemon } from '../../core/models/pokemon.model';
 import { FavoritesService } from '../../state/favorites/favorites.service';
 import { PokemonCardComponent } from '../../ui/pokemon-card/pokemon-card.component';
-import { SkeletonCardComponent } from '../../ui/loaders/skeleton-card.component';
+import { PokeballSpinnerComponent } from '../../ui/loaders/pokeball-spinner.component';
 
 @Component({
   selector: 'app-favorites-page',
   standalone: true,
-  imports: [PokemonCardComponent, SkeletonCardComponent],
+  imports: [PokemonCardComponent, PokeballSpinnerComponent],
   templateUrl: './favorites.page.html',
   styleUrl: './favorites.page.scss',
 })
@@ -23,8 +23,6 @@ export class FavoritesPage implements OnInit {
 
   readonly isLoading = signal(true);
   readonly pokemonList = signal<Pokemon[]>([]);
-  readonly skeletons = Array(6).fill(0);
-
   readonly displayedPokemon = computed(() => {
     const ids = new Set(this.favoritesService.favorites().map((f) => f.pokemonId));
     return this.pokemonList().filter((p) => ids.has(p.id));

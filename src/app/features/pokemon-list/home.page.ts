@@ -6,6 +6,7 @@ import { PokedexHeaderComponent } from '../../layout/header/header.component';
 import { TypeFilterComponent } from '../../ui/filters/type-filter.component';
 import { PokemonCardComponent } from '../../ui/pokemon-card/pokemon-card.component';
 import { SkeletonCardComponent } from '../../ui/loaders/skeleton-card.component';
+import { PokeballSpinnerComponent } from '../../ui/loaders/pokeball-spinner.component';
 import { PokemonService } from '../../data-access/pokeapi/pokemon.service';
 import { FavoritesService } from '../../state/favorites/favorites.service';
 import { Pokemon, GenerationInfo } from '../../core/models/pokemon.model';
@@ -19,7 +20,8 @@ type SortOption = 'id-asc' | 'id-desc' | 'name-asc' | 'name-desc';
     PokedexHeaderComponent,
     TypeFilterComponent,
     PokemonCardComponent,
-    SkeletonCardComponent
+    SkeletonCardComponent,
+    PokeballSpinnerComponent,
 ],
     templateUrl: './home.page.html',
     styleUrl: './home.page.scss'

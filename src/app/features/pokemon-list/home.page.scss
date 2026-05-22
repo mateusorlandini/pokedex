@@ -12,6 +12,16 @@
   margin-bottom: 20px;
 }
 
+.home__generations-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 4px 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
 .home__generations-scroll {
   display: flex;
   gap: 8px;

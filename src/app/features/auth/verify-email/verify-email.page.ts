@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { firebaseAuth } from '../../../core/services/firebase.config';
+import { PokeballSpinnerComponent } from '../../../ui/loaders/pokeball-spinner.component';
 
 @Component({
   selector: 'app-verify-email-page',
   standalone: true,
-  imports: [],
+  imports: [PokeballSpinnerComponent],
   templateUrl: './verify-email.page.html',
   styleUrl: './verify-email.page.scss',
 })

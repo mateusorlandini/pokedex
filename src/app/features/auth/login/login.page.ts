@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { PokeballSpinnerComponent } from '../../../ui/loaders/pokeball-spinner.component';
 
 function firebaseErrorMessage(code: string): string {
   switch (code) {
@@ -25,7 +26,7 @@ function firebaseErrorMessage(code: string): string {
 @Component({
     selector: 'app-login-page',
     standalone: true,
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, PokeballSpinnerComponent],
     templateUrl: './login.page.html',
     styleUrl: './login.page.scss'
 })

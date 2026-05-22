@@ -14,6 +14,7 @@ import {
 } from '../../core/models/pokemon.model';
 import { TypeBadgeComponent } from '../../ui/type-badge/type-badge.component';
 import { StatBarComponent } from '../../ui/stat-bar/stat-bar.component';
+import { PokeballSpinnerComponent } from '../../ui/loaders/pokeball-spinner.component';
 
 interface EvolutionStep {
   pokemon: Pokemon;
@@ -24,7 +25,7 @@ interface EvolutionStep {
 @Component({
     selector: 'app-pokemon-details-page',
     standalone: true,
-    imports: [CommonModule, RouterModule, TypeBadgeComponent, StatBarComponent],
+    imports: [CommonModule, RouterModule, TypeBadgeComponent, StatBarComponent, PokeballSpinnerComponent],
     templateUrl: './pokemon-details.page.html',
     styleUrl: './pokemon-details.page.scss'
 })

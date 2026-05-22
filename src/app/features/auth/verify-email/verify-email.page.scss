@@ -74,10 +74,15 @@
   border: none;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 
   &--primary {
     color: #ffffff;
     background: var(--accent-primary);
+    --pokeball-border: rgba(255, 255, 255, 0.9);
   }
 
   &--ghost {

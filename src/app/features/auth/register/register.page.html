@@ -95,7 +95,12 @@
         class="register-submit"
         [disabled]="isSubmitting()"
       >
-        {{ isSubmitting() ? 'Creating account…' : 'Create account' }}
+        @if (isSubmitting()) {
+          <app-pokeball-spinner size="sm" />
+          Creating account…
+        } @else {
+          Create account
+        }
       </button>
     </form>
 

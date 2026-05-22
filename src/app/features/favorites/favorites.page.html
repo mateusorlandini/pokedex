@@ -10,10 +10,9 @@
   </header>
 
   @if (isLoading()) {
-    <div class="favorites-grid">
-      @for (s of skeletons; track $index) {
-        <app-skeleton-card />
-      }
+    <div class="favorites-loading">
+      <app-pokeball-spinner size="lg" />
+      <span>Loading your favorites…</span>
     </div>
   } @else if (displayedPokemon().length === 0) {
     <div class="favorites-empty">

@@ -58,7 +58,12 @@
         class="login-submit"
         [disabled]="form.invalid || isSubmitting()"
       >
-        {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
+        @if (isSubmitting()) {
+          <app-pokeball-spinner size="sm" />
+          Signing in…
+        } @else {
+          Sign in
+        }
       </button>
     </form>
 
