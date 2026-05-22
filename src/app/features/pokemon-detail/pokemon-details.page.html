@@ -192,15 +192,27 @@
 
         @if (activeTab() === 'moves') {
           <div class="details__section details__moves-section">
-            <div class="details__moves-grid">
-              @for (move of p.moves.slice(0, 40); track move.move.name) {
-                <span class="details__move-chip">{{ move.move.name }}</span>
-              }
-            </div>
-            @if (p.moves.length > 40) {
-              <p class="details__muted" style="margin-top: 16px; text-align: center;">
-                + {{ p.moves.length - 40 }} more moves
-              </p>
+            @for (group of visibleGroupedMoves(); track group.method) {
+              <div class="details__moves-group">
+                <span class="details__moves-group-label details__moves-group-label--{{ group.method }}">
+                  {{ group.label }}
+                </span>
+                <div class="details__moves-grid">
+                  @for (entry of group.moves; track entry.name) {
+                    <span class="details__move-chip">
+                      @if (group.method === 'level-up') {
+                        <span class="details__move-level">{{ entry.level > 0 ? 'Lv.' + entry.level : '—' }}</span>
+                      }
+                      {{ entry.name }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+            @if (hiddenMovesCount() > 0) {
+              <button class="details__moves-more" type="button" (click)="showAllMoves.set(true)">
+                + {{ hiddenMovesCount() }} more moves
+              </button>
             }
           </div>
         }

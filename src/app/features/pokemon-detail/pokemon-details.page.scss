@@ -507,6 +507,45 @@
 }
 
 /* Moves Tab */
+.details__moves-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.details__moves-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.details__moves-group-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  align-self: flex-start;
+
+  &--level-up  { background: #d4f5e2; color: #1a7a45; }
+  &--machine   { background: #ddeeff; color: #1a5fa8; }
+  &--egg       { background: #fde8f5; color: #a0287a; }
+  &--tutor     { background: #ede8fd; color: #5a28a0; }
+  &--other, &  { background: var(--surface-2); color: var(--text-muted); }
+}
+
+:host-context([data-theme='dark']) {
+  .details__moves-group-label {
+    &--level-up  { background: #0e3320; color: #5fe09a; }
+    &--machine   { background: #0d2540; color: #5aacf5; }
+    &--egg       { background: #3a0e2a; color: #f080d0; }
+    &--tutor     { background: #1e0e3a; color: #b080f5; }
+  }
+}
+
 .details__moves-grid {
   display: flex;
   flex-wrap: wrap;
@@ -514,7 +553,10 @@
 }
 
 .details__move-chip {
-  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
   border-radius: 8px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -523,10 +565,44 @@
   text-transform: capitalize;
   color: var(--text-muted);
   transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--surface-2);
+  }
 }
 
-.details__move-chip:hover {
-  background: var(--surface-2);
+.details__move-level {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #1a7a45;
+  background: #d4f5e2;
+  padding: 1px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+:host-context([data-theme='dark']) .details__move-level {
+  color: #5fe09a;
+  background: #0e3320;
+}
+
+.details__moves-more {
+  align-self: center;
+  margin-top: 4px;
+  padding: 10px 24px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--type-color);
+  background: transparent;
+  border: 2px solid var(--type-color);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--type-color);
+    color: #fff;
+  }
 }
 
 /* Responsive */

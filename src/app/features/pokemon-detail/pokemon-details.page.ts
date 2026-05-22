@@ -1,7 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { PokemonService } from '../../data-access/pokeapi/pokemon.service';
 import { FavoritesService } from '../../state/favorites/favorites.service';
@@ -22,9 +24,32 @@ interface EvolutionStep {
   trigger?: string;
 }
 
+interface MoveEntry {
+  name: string;
+  method: string;
+  level: number;
+}
+
+interface MoveGroup {
+  method: string;
+  label: string;
+  moves: MoveEntry[];
+}
+
+const METHOD_ORDER = ['level-up', 'machine', 'egg', 'tutor'];
+const METHOD_LABELS: Record<string, string> = {
+  'level-up': 'Level Up',
+  'machine': 'TM / HM',
+  'egg': 'Egg Move',
+  'tutor': 'Move Tutor',
+  'other': 'Other',
+};
+const MOVES_LIMIT = 40;
+
 @Component({
     selector: 'app-pokemon-details-page',
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, RouterModule, TypeBadgeComponent, StatBarComponent, PokeballSpinnerComponent],
     templateUrl: './pokemon-details.page.html',
     styleUrl: './pokemon-details.page.scss'
@@ -33,6 +58,8 @@ export class PokemonDetailsPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly _loadCancel$ = new Subject<void>();
   readonly pokemonService = inject(PokemonService);
   readonly favoritesService = inject(FavoritesService);
   private readonly toastService = inject(ToastService);
@@ -45,13 +72,57 @@ export class PokemonDetailsPage implements OnInit {
   readonly description = signal('');
   readonly category = signal('');
   readonly activeTab = signal<'about' | 'stats' | 'moves'>('about');
+  readonly showAllMoves = signal(false);
 
-  get id(): string {
-    return this.route.snapshot.paramMap.get('id') ?? '';
-  }
+  readonly groupedMoves = computed<MoveGroup[]>(() => {
+    const p = this.pokemon();
+    if (!p) return [];
+
+    const groups = new Map<string, MoveEntry[]>();
+    for (const m of p.moves) {
+      const detail = m.version_group_details?.at(-1);
+      const method = detail?.move_learn_method?.name ?? 'other';
+      const level = detail?.level_learned_at ?? 0;
+      if (!groups.has(method)) groups.set(method, []);
+      groups.get(method)!.push({ name: m.move.name, method, level });
+    }
+    groups.get('level-up')?.sort((a, b) => a.level - b.level);
+
+    const knownMethods = METHOD_ORDER.filter((m) => groups.has(m));
+    const otherMethods = [...groups.keys()].filter((k) => !METHOD_ORDER.includes(k));
+    return [...knownMethods, ...otherMethods].map((method) => ({
+      method,
+      label: METHOD_LABELS[method] ?? method,
+      moves: groups.get(method)!,
+    }));
+  });
+
+  readonly visibleGroupedMoves = computed<MoveGroup[]>(() => {
+    const groups = this.groupedMoves();
+    if (this.showAllMoves()) return groups;
+    let remaining = MOVES_LIMIT;
+    const result: MoveGroup[] = [];
+    for (const group of groups) {
+      if (remaining <= 0) break;
+      const visible = group.moves.slice(0, remaining);
+      remaining -= visible.length;
+      result.push({ ...group, moves: visible });
+    }
+    return result;
+  });
+
+  readonly hiddenMovesCount = computed(() => {
+    if (this.showAllMoves()) return 0;
+    const shown = this.visibleGroupedMoves().reduce((s, g) => s + g.moves.length, 0);
+    return (this.pokemon()?.moves.length ?? 0) - shown;
+  });
 
   ngOnInit(): void {
-    this.loadPokemon();
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const id = params.get('id') ?? '';
+      this.resetState();
+      this.loadPokemon(id);
+    });
   }
 
   back(): void {
@@ -99,11 +170,19 @@ export class PokemonDetailsPage implements OnInit {
     this.router.navigate(['/pokemon', pokemonId]);
   }
 
-  private loadPokemon(): void {
+  private resetState(): void {
+    this._loadCancel$.next();
     this.isLoading.set(true);
     this.hasError.set(false);
+    this.pokemon.set(null);
+    this.evolutionChain.set([]);
+    this.description.set('');
+    this.category.set('');
+    this.showAllMoves.set(false);
+  }
 
-    this.pokemonService.getPokemon(this.id).subscribe({
+  private loadPokemon(id: string): void {
+    this.pokemonService.getPokemon(id).pipe(takeUntil(this._loadCancel$)).subscribe({
       next: (pokemon) => {
         this.pokemon.set(pokemon);
         this.isLoading.set(false);
@@ -118,7 +197,7 @@ export class PokemonDetailsPage implements OnInit {
   }
 
   private loadSpeciesData(pokemon: Pokemon): void {
-    this.pokemonService.getPokemonSpecies(pokemon.id).subscribe({
+    this.pokemonService.getPokemonSpecies(pokemon.id).pipe(takeUntil(this._loadCancel$)).subscribe({
       next: (species) => {
         const entry = species.flavor_text_entries?.find(
           (e) => e.language.name === 'en'
@@ -137,7 +216,7 @@ export class PokemonDetailsPage implements OnInit {
   private loadEvolutions(pokemon: Pokemon): void {
     this.isEvolutionLoading.set(true);
 
-    this.pokemonService.getPokemonSpecies(pokemon.id).subscribe({
+    this.pokemonService.getPokemonSpecies(pokemon.id).pipe(takeUntil(this._loadCancel$)).subscribe({
       next: (species) => {
         const chainUrl = species?.evolution_chain?.url;
         if (!chainUrl) {
@@ -145,7 +224,7 @@ export class PokemonDetailsPage implements OnInit {
           return;
         }
 
-        this.pokemonService.getEvolutionChain(chainUrl).subscribe({
+        this.pokemonService.getEvolutionChain(chainUrl).pipe(takeUntil(this._loadCancel$)).subscribe({
           next: (chain) => {
             const rows = this.extractEvolutionRows(chain.chain);
             if (!rows.length) {
@@ -159,7 +238,7 @@ export class PokemonDetailsPage implements OnInit {
 
             forkJoin(
               uniqueNames.map((name) => this.pokemonService.getPokemon(name))
-            ).subscribe({
+            ).pipe(takeUntil(this._loadCancel$)).subscribe({
               next: (pokemonList) => {
                 const byName = pokemonList.reduce<Record<string, Pokemon>>(
                   (acc, p) => { acc[p.name.toLowerCase()] = p; return acc; },
