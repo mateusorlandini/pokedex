@@ -2,14 +2,16 @@
 
 # Pokédex
 
-**A modern, responsive Pokémon explorer built with Angular 17**
+**A modern, enterprise-grade Pokémon explorer built with Angular 21 and Firebase**
 
-[![Angular](https://img.shields.io/badge/Angular-17-DD0031?style=flat-square&logo=angular)](https://angular.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![PokéAPI](https://img.shields.io/badge/API-PokéAPI-EF5350?style=flat-square)](https://pokeapi.co/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+[![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=flat-square&logo=angular)](https://angular.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-FFCA28?style=flat-square&logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-Explore the first 151 Pokémon with a sleek, portfolio-grade interface. Search, filter by type, sort, favorite, and view detailed stats — all with smooth animations and full dark mode support.
+> Pokédex is a full-stack Angular 21 web app that lets authenticated trainers browse, search, filter, and favorite Pokémon using live data from the PokéAPI.
+
+**[Try it live →](https://pokedex-5a812.firebaseapp.com/login)**
 
 </div>
 
@@ -17,55 +19,102 @@ Explore the first 151 Pokémon with a sleek, portfolio-grade interface. Search, 
 
 ## Features
 
-- **Browse & Search** — Explore 151 Pokémon with real-time search by name or number
-- **Type Filtering** — Filter by any of the 18 Pokémon types with color-coded chips
-- **Sort Options** — Sort by number (asc/desc) or name (A-Z / Z-A)
-- **Favorites System** — Favorite Pokémon persisted in localStorage across sessions
+- **Authentication** — Email/password sign-up with email verification, login, and password reset via Firebase Auth
+- **Persistent Favorites** — Favorites saved to Firestore and synced in real time across devices
+- **Browse All 9 Generations** — Switch between Kanto through Paldea; Pokémon fetched and cached per generation
+- **Search & Filter** — Real-time search by name, filter by type, sort by number or name
+- **Detailed Pokémon Pages** — Stats, abilities, moves, evolution chain, shiny sprites, and Pokémon cries
 - **Dark / Light Theme** — Toggle themes with automatic OS preference detection
-- **Premium Detail Page** — Hero section, tabbed layout (About / Stats / Moves), stat bars, evolution chain, shiny sprites
 - **Skeleton Loading** — Elegant loading placeholders instead of spinners
-- **Toast Notifications** — Non-intrusive feedback for user actions
 - **Responsive Design** — Optimized for mobile, tablet, and desktop
-- **Lazy Loading** — Route-based code splitting for optimal performance
-- **Request Caching** — API responses cached with RxJS `shareReplay`
+- **Lazy Loading** — Route-based code splitting for fast initial load
+- **Request Caching** — API responses cached with RxJS `shareReplay` — no redundant network calls
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| **Framework** | Angular 17 (standalone components, signals, new control flow) |
-| **Language** | TypeScript 5.4 |
+| **Framework** | Angular 21 (standalone components, signals, new control flow) |
+| **Language** | TypeScript |
 | **Styling** | SCSS with CSS custom properties (design tokens) |
-| **State** | Angular Signals |
-| **HTTP** | Angular HttpClient + RxJS |
+| **State** | Angular Signals + RxJS |
+| **Auth** | Firebase Authentication (email/password) |
+| **Database** | Firestore (favorites, user profiles) |
 | **API** | [PokéAPI v2](https://pokeapi.co/) |
-| **Architecture** | Feature-based folder structure with core/shared separation |
+| **Hosting** | Firebase Hosting |
 
-## Architecture
+## Live Demo
+
+The app is deployed at:
+
+**[https://pokedex-5a812.firebaseapp.com/login](https://pokedex-5a812.firebaseapp.com/login)**
+
+Register with any email address, verify it, and start exploring.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js ≥ 18
+- npm ≥ 9
+
+### Installation
+
+```bash
+git clone https://github.com/mateusorlandini/pokedex.git
+cd pokedex
+npm install
+npm start
+```
+
+Open [http://localhost:4200](http://localhost:4200) in your browser.
+
+### Build
+
+```bash
+npm run build
+```
+
+Production bundle outputs to `dist/pokedex/`.
+
+### Test
+
+```bash
+npm test
+```
+
+Runs unit tests via Karma + Jasmine in headless Chrome. To run a single spec file:
+
+```bash
+ng test --include='**/pokemon.service.spec.ts'
+```
+
+## Project Structure
 
 ```
 src/app/
 ├── core/
-│   ├── models/            # TypeScript interfaces & constants
-│   └── services/          # Singleton services (pokemon, favorites, theme, toast)
-├── shared/
-│   └── components/        # Reusable UI components
-│       ├── pokemon-card/   # Card with hover effects & type colors
-│       ├── type-badge/     # Color-coded type pill
-│       ├── stat-bar/       # Animated stat bar
-│       ├── skeleton-card/  # Loading placeholder
-│       └── toast-container/# Notification system
+│   ├── guards/          # AuthGuard (protects /pokemon, /favorites)
+│   ├── models/          # Domain types & design constants
+│   └── services/        # AuthService, ThemeService, ToastService, firebase.config
+├── data-access/
+│   └── pokeapi/         # PokéAPI HTTP client with per-key caching
+├── state/
+│   └── favorites/       # Firestore-backed signal store
+├── layout/
+│   └── header/          # App shell (search, theme toggle, logout)
 ├── features/
-│   └── pokedex/
-│       ├── components/    # Feature-specific components
-│       │   ├── header/     # Search bar, theme toggle, favorites filter
-│       │   └── type-filter/# Scrollable type chip selector
-│       └── pages/
-│           ├── home/       # Main grid page with filters & pagination
-│           └── details/    # Premium detail page with tabs & evolutions
-├── app.component.*        # Root shell
-├── app.config.ts          # Providers
-└── app.routes.ts          # Lazy-loaded routes
+│   ├── auth/            # login, register, verify-email, reset-password pages
+│   ├── pokemon-list/    # Main grid with generation selector, filters, sort
+│   ├── pokemon-detail/  # Detail page — stats, moves, evolution chain, cries
+│   └── favorites/       # Dedicated favorites page
+└── ui/                  # Presentational components
+    ├── pokemon-card/
+    ├── filters/         # type-filter
+    ├── loaders/         # skeleton-card
+    ├── toast/
+    ├── type-badge/
+    └── stat-bar/
 ```
 
 ## Design System
@@ -80,56 +129,25 @@ src/app/
 
 **Typography:** Inter (400–800) · **Border Radius:** 12–20px · **Shadows:** Multi-layer, theme-aware
 
-## Getting Started
+## Authentication Flow
 
-### Prerequisites
+```
+Register → Verify Email → Login → Pokédex
+```
 
-- Node.js 18+
-- npm 9+
+- Registration sends a verification email via Firebase Auth
+- Protected routes (`/pokemon`, `/pokemon/:id`, `/favorites`) require a verified, authenticated session
+- Password reset is available from the login screen
+- Favorites are scoped to the authenticated user and synced to Firestore in real time
 
-### Installation
+## Contributing
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/pokedex.git
+git clone https://github.com/mateusorlandini/pokedex.git
 cd pokedex
-
-# Install dependencies
 npm install
-
-# Start development server
-ng serve
+npm start   # http://localhost:4200
+npm test    # run unit tests
 ```
 
-Open [http://localhost:4200](http://localhost:4200) in your browser.
-
-### Build
-
-```bash
-ng build
-```
-
-Production bundle is output to `dist/pokedex/`.
-
-## Technical Highlights
-
-- **Angular 17 Signals** — Reactive state without RxJS overhead for UI state
-- **New Control Flow** — `@if`, `@for`, `@switch` syntax for cleaner templates
-- **Standalone Components** — No NgModules, tree-shakable architecture
-- **Lazy Routes** — Each page loaded on demand for fast initial load (~76 KB transfer)
-- **Request Caching** — `shareReplay(1)` prevents redundant API calls
-- **CSS Custom Properties** — Theme switching with zero JavaScript style manipulation
-- **BEM Methodology** — Consistent, maintainable CSS class naming
-- **Accessibility** — `aria-label`, `role`, `tabindex`, keyboard navigation, focus-visible states
-
-## Screenshots
-
-> Add screenshots of the Home page (light + dark), Detail page, and mobile view for maximum portfolio impact.
-
-| Home (Light) | Home (Dark) | Detail Page | Mobile |
-|:---:|:---:|:---:|:---:|
-| *screenshot* | *screenshot* | *screenshot* | *screenshot* |
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
+Open an issue to discuss changes before submitting a pull request.
