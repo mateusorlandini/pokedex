@@ -1,5 +1,12 @@
 # CLAUDE.md
 
+We're building the app described in @SPEC.MD. Read thatfile for general architectural tasks or to double-check the exact database
+structure, tech stack or app architecture.
+
+Keep your replies extremely concise and focus on conveying the key information. No unnecessary fluff, no long code snippets.
+Whenever working with any third-party library or something similar, you MUST look up the official documentation to ensure that you're working with up-to-date information.
+Use the DocsExplorer subagent for efficient documentation lookup.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Commands
@@ -51,12 +58,12 @@ Routes in `app.routes.ts` are lazy via `loadComponent`. Imports are relative —
 ### Data flow
 
 1. **`PokemonService`** (`data-access/pokeapi/pokemon.service.ts`) is the single HTTP gateway.
-   - Per-key in-memory caches (`Map<string|number, Observable<…>>`) wrapping `shareReplay(1)` for `getPokemon` and `getPokemonSpecies`. **Reuse these getters** — do not call `http.get` directly for the same endpoints, or the cache is bypassed.
-   - Generation listing is also `shareReplay(1)`-cached.
+  - Per-key in-memory caches (`Map<string|number, Observable<…>>`) wrapping `shareReplay(1)` for `getPokemon` and `getPokemonSpecies`. **Reuse these getters** — do not call `http.get` directly for the same endpoints, or the cache is bypassed.
+  - Generation listing is also `shareReplay(1)`-cached.
 
 2. **`HomePage`** orchestrates the grid. On generation select, it calls `getGeneration(id)` to get species names, then `forkJoin`s `getPokemon(name)` for each (with `catchError(() => of(null))` per request so one failure doesn't kill the batch). The resulting list is cached per generation in a component-local `Map<number, Pokemon[]>` (`pokemonByGeneration`).
-   - All filtering (search, type, favorites-only), sorting, and pagination is derived state via `computed()` signals over `allPokemon`.
-   - Pagination is "load more": `currentPage` × `pageSize` (36) slice of the filtered list. Anything that changes the filter set must reset `currentPage` to 1.
+  - All filtering (search, type, favorites-only), sorting, and pagination is derived state via `computed()` signals over `allPokemon`.
+  - Pagination is "load more": `currentPage` × `pageSize` (36) slice of the filtered list. Anything that changes the filter set must reset `currentPage` to 1.
 
 3. **`FavoritesService`** (`state/favorites/favorites.service.ts`) — `Set<number>` in a signal, persisted to `localStorage` under key `pokedex_favorites`. Lives under `state/` because it's a store, not an HTTP service.
 
