@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { ThemeService } from '../../core/services/theme.service';
 import { FavoritesService } from '../../state/favorites/favorites.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-pokedex-header',
@@ -20,6 +22,8 @@ export class PokedexHeaderComponent {
 
   readonly themeService = inject(ThemeService);
   readonly favoritesService = inject(FavoritesService);
+  readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   onSearch(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
@@ -28,5 +32,10 @@ export class PokedexHeaderComponent {
 
   onToggleFavorites(): void {
     this.toggleFavorites.emit();
+  }
+
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

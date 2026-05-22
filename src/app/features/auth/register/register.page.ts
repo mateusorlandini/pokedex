@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { FirebaseService } from '../../../core/services/firebase.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 
 function passwordStrengthValidator(): ValidatorFn {
@@ -44,7 +44,7 @@ type RegisterField = 'name' | 'email' | 'password' | 'confirmPassword';
 export class RegisterPage {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
-  private readonly firebaseService = inject(FirebaseService);
+  private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);
 
   readonly isSubmitting = signal(false);
@@ -113,16 +113,20 @@ export class RegisterPage {
       return;
     }
 
-    const { name, email } = this.form.getRawValue();
+    const { name, email, password } = this.form.getRawValue();
     this.isSubmitting.set(true);
 
-    this.firebaseService.registerUser({ name, email }).subscribe({
+    this.authService.register(name, email, password).subscribe({
       next: () => {
         this.toastService.show('Account created! Welcome, ' + name, 'success');
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        const message = err?.message ?? 'Registration failed. Please try again.';
+        const code: string = err?.code ?? '';
+        const message =
+          code === 'auth/email-already-in-use'
+            ? 'This email is already registered.'
+            : (err?.message ?? 'Registration failed. Please try again.');
         this.toastService.show(message, 'error');
         this.isSubmitting.set(false);
       },

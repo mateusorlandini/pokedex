@@ -3,7 +3,22 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
+import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+
+function firebaseErrorMessage(code: string): string {
+  switch (code) {
+    case 'auth/user-not-found':
+    case 'auth/invalid-credential':
+      return 'No account found with this email or password.';
+    case 'auth/wrong-password':
+      return 'Incorrect password. Please try again.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Please try again later.';
+    default:
+      return 'Login failed. Please try again.';
+  }
+}
 
 @Component({
   selector: 'app-login-page',
@@ -15,6 +30,7 @@ import { ToastService } from '../../../core/services/toast.service';
 export class LoginPage {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);
 
   readonly isSubmitting = signal(false);
@@ -49,16 +65,19 @@ export class LoginPage {
       return;
     }
 
+    const { email, password } = this.form.getRawValue();
     this.isSubmitting.set(true);
-    console.log('login submit', this.form.getRawValue());
 
-    setTimeout(() => {
-      this.isSubmitting.set(false);
-      this.toastService.show(
-        'Auth not connected yet — Firebase coming soon',
-        'info'
-      );
-    }, 800);
+    this.authService.login(email, password).subscribe({
+      next: () => {
+        this.router.navigate(['/pokemon']);
+      },
+      error: (err) => {
+        const message = firebaseErrorMessage(err?.code ?? '');
+        this.toastService.show(message, 'error');
+        this.isSubmitting.set(false);
+      },
+    });
   }
 
   onRegister(): void {
