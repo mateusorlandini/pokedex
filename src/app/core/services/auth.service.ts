@@ -3,16 +3,15 @@ import {
   User,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
-  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
 } from 'firebase/auth';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { ref, serverTimestamp, set } from 'firebase/database';
 import { Observable, from, map, switchMap } from 'rxjs';
 
-import { firebaseAuth, firebaseFirestore } from './firebase.config';
+import { firebaseAuth, firebaseDatabase } from './firebase.config';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -35,17 +34,14 @@ export class AuthService {
     return from(createUserWithEmailAndPassword(firebaseAuth, email, password)).pipe(
       switchMap(({ user }) =>
         from(
-          updateProfile(user, { displayName: name })
-            .then(() => sendEmailVerification(user))
-            .then(() =>
-              setDoc(doc(firebaseFirestore, 'users', user.uid), {
-                uid: user.uid,
-                email: user.email,
-                displayName: name,
-                createdAt: serverTimestamp(),
-                emailVerified: false,
-              })
-            )
+          updateProfile(user, { displayName: name }).then(() =>
+            set(ref(firebaseDatabase, `users/${user.uid}`), {
+              uid: user.uid,
+              email: user.email,
+              displayName: name,
+              createdAt: serverTimestamp(),
+            })
+          )
         )
       )
     );
@@ -53,29 +49,15 @@ export class AuthService {
 
   login(email: string, password: string): Observable<void> {
     return from(signInWithEmailAndPassword(firebaseAuth, email, password)).pipe(
-      map(({ user }) => {
-        if (!user.emailVerified) {
-          signOut(firebaseAuth);
-          const err = Object.assign(new Error('Email not verified'), {
-            code: 'auth/email-not-verified',
-          });
-          throw err;
-        }
-      })
+      map(() => void 0)
     );
   }
 
-  logout(): void {
-    signOut(firebaseAuth);
+  logout(): Observable<void> {
+    return from(signOut(firebaseAuth));
   }
 
   sendPasswordReset(email: string): Observable<void> {
     return from(sendPasswordResetEmail(firebaseAuth, email));
-  }
-
-  resendVerificationEmail(): Observable<void> {
-    const user = firebaseAuth.currentUser;
-    if (!user) return from(Promise.reject(new Error('No user signed in')));
-    return from(sendEmailVerification(user));
   }
 }

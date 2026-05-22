@@ -56,6 +56,25 @@
   flex-shrink: 0;
 }
 
+.header__user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header__user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
 .header__user {
   font-size: 0.8rem;
   font-weight: 600;

@@ -1,27 +1,25 @@
 import { Routes } from '@angular/router';
 
 import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'pokemon',
+    redirectTo: 'login',
   },
   {
     path: 'login',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/auth/login/login.page').then((m) => m.LoginPage),
   },
   {
     path: 'register',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/auth/register/register.page').then((m) => m.RegisterPage),
-  },
-  {
-    path: 'verify-email',
-    loadComponent: () =>
-      import('./features/auth/verify-email/verify-email.page').then((m) => m.VerifyEmailPage),
   },
   {
     path: 'reset-password',

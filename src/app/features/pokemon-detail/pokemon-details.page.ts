@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -56,7 +56,6 @@ const MOVES_LIMIT = 40;
 })
 export class PokemonDetailsPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  private readonly location = inject(Location);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly _loadCancel$ = new Subject<void>();
@@ -126,7 +125,7 @@ export class PokemonDetailsPage implements OnInit {
   }
 
   back(): void {
-    this.location.back();
+    this.router.navigate(['/pokemon']);
   }
 
   get primaryTypeColor(): string {

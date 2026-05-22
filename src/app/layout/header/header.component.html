@@ -19,8 +19,15 @@
 
 
     <div class="header__actions">
-      @if (authService.currentUserName()) {
-        <span class="header__user">{{ authService.currentUserName() }}</span>
+      @if (authService.isAuthenticated()) {
+        <div class="header__user-info">
+          <span class="header__user-avatar">
+            {{ (authService.currentUserName() || authService.currentUser()?.email || '?')[0].toUpperCase() }}
+          </span>
+          <span class="header__user">
+            {{ authService.currentUserName() || authService.currentUser()?.email }}
+          </span>
+        </div>
         <button class="header__logout" type="button" (click)="onLogout()" aria-label="Logout">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>

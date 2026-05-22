@@ -119,8 +119,9 @@ export class RegisterPage {
 
     this.authService.register(name, email, password).subscribe({
       next: () => {
-        this.toastService.show('Account created! Check your email to verify your account.', 'success');
-        this.router.navigate(['/verify-email']);
+        this.isSubmitting.set(false);
+        this.toastService.show('Account created successfully!', 'success');
+        this.router.navigate(['/pokemon']);
       },
       error: (err) => {
         const code: string = err?.code ?? '';

@@ -91,18 +91,25 @@ export class FavoritesService {
   private subscribeToFirestore(uid: string): void {
     this._unsubscribeSnapshot?.();
     const favRef = collection(firebaseFirestore, 'users', uid, 'favorites');
-    this._unsubscribeSnapshot = onSnapshot(favRef, (snapshot) => {
-      const records: FavoriteRecord[] = snapshot.docs.map((d) => {
-        const data = d.data();
-        return {
-          pokemonId: data['pokemonId'] as number,
-          name: data['name'] as string,
-          imageUrl: data['imageUrl'] as string,
-          types: data['types'] as string[],
-        };
-      });
-      this._favorites.set(records);
-    });
+    this._unsubscribeSnapshot = onSnapshot(
+      favRef,
+      (snapshot) => {
+        const records: FavoriteRecord[] = snapshot.docs.map((d) => {
+          const data = d.data();
+          return {
+            pokemonId: data['pokemonId'] as number,
+            name: data['name'] as string,
+            imageUrl: data['imageUrl'] as string,
+            types: data['types'] as string[],
+          };
+        });
+        this._favorites.set(records);
+      },
+      () => {
+        // Firestore unavailable (blocked, offline, or permission denied) — degrade gracefully
+        this._favorites.set([]);
+      }
+    );
   }
 
   private clearAndUnsubscribe(): void {
