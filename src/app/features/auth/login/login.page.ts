@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { ToastService } from '../../../core/services/toast.service';
 
@@ -13,6 +14,7 @@ import { ToastService } from '../../../core/services/toast.service';
 })
 export class LoginPage {
   private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
 
   readonly isSubmitting = signal(false);
@@ -60,6 +62,6 @@ export class LoginPage {
   }
 
   onRegister(): void {
-    console.log('register clicked');
+    this.router.navigate(['/register']);
   }
 }

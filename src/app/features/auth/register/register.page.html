@@ -1,0 +1,107 @@
+<section class="register-shell">
+  <div class="register-card">
+    <p class="register-brand">Pokédex</p>
+    <h1 class="register-title">Create account</h1>
+    <p class="register-subtitle">Join the Pokédex and start your journey, trainer.</p>
+
+    <form class="register-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="register-field">
+        <label class="register-label" for="register-name">Name</label>
+        <input
+          id="register-name"
+          class="register-input"
+          type="text"
+          autocomplete="name"
+          formControlName="name"
+          placeholder="Ash Ketchum"
+          [class.register-input--error]="showError('name')"
+        />
+        @if (showError('name')) {
+          <p class="register-error">{{ errorMessage('name') }}</p>
+        }
+      </div>
+
+      <div class="register-field">
+        <label class="register-label" for="register-email">Email</label>
+        <input
+          id="register-email"
+          class="register-input"
+          type="email"
+          autocomplete="email"
+          formControlName="email"
+          placeholder="trainer@pokedex.com"
+          [class.register-input--error]="showError('email')"
+        />
+        @if (showError('email')) {
+          <p class="register-error">{{ errorMessage('email') }}</p>
+        }
+      </div>
+
+      <div class="register-field">
+        <label class="register-label" for="register-password">Password</label>
+        <div class="register-input-wrap">
+          <input
+            id="register-password"
+            class="register-input register-input--with-action"
+            [type]="showPassword() ? 'text' : 'password'"
+            autocomplete="new-password"
+            formControlName="password"
+            placeholder="••••••••"
+            [class.register-input--error]="showError('password')"
+          />
+          <button
+            type="button"
+            class="register-input-action"
+            (click)="togglePassword()"
+            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+          >
+            {{ showPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        <p class="register-hint">Min 6 chars · 1 uppercase · 1 special character</p>
+        @if (showError('password')) {
+          <p class="register-error">{{ errorMessage('password') }}</p>
+        }
+      </div>
+
+      <div class="register-field">
+        <label class="register-label" for="register-confirm">Confirm password</label>
+        <div class="register-input-wrap">
+          <input
+            id="register-confirm"
+            class="register-input register-input--with-action"
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            autocomplete="new-password"
+            formControlName="confirmPassword"
+            placeholder="••••••••"
+            [class.register-input--error]="showError('confirmPassword')"
+          />
+          <button
+            type="button"
+            class="register-input-action"
+            (click)="toggleConfirmPassword()"
+            [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'"
+          >
+            {{ showConfirmPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        @if (showError('confirmPassword')) {
+          <p class="register-error">{{ errorMessage('confirmPassword') }}</p>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="register-submit"
+        [disabled]="isSubmitting()"
+      >
+        {{ isSubmitting() ? 'Creating account…' : 'Create account' }}
+      </button>
+    </form>
+
+    <p class="register-footer">
+      Already have an account?
+      <button type="button" class="register-link" (click)="onLogin()">Sign in</button>
+    </p>
+  </div>
+</section>
