@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ALL_POKEMON_TYPES, POKEMON_TYPE_COLORS, PokemonTypeName } from '../../core/models/pokemon.model';
 
 @Component({
-  selector: 'app-type-filter',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-type-filter',
+    standalone: true,
+    imports: [],
+    template: `
     <div class="type-filter">
       <button
         class="type-chip"
@@ -27,7 +27,7 @@ import { ALL_POKEMON_TYPES, POKEMON_TYPE_COLORS, PokemonTypeName } from '../../c
       }
     </div>
   `,
-  styles: [`
+    styles: [`
     .type-filter {
       display: flex;
       flex-wrap: wrap;
@@ -60,7 +60,7 @@ import { ALL_POKEMON_TYPES, POKEMON_TYPE_COLORS, PokemonTypeName } from '../../c
       color: #fff;
       box-shadow: 0 4px 12px color-mix(in srgb, var(--chip-color, var(--accent-primary)) 40%, transparent);
     }
-  `],
+  `]
 })
 export class TypeFilterComponent {
   @Input() selectedType: string | null = null;

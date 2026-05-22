@@ -1,16 +1,16 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import { ThemeService } from '../../core/services/theme.service';
 import { FavoritesService } from '../../state/favorites/favorites.service';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  selector: 'app-pokedex-header',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.scss',
+    selector: 'app-pokedex-header',
+    standalone: true,
+    imports: [],
+    templateUrl: './header.component.html',
+    styleUrl: './header.component.scss'
 })
 export class PokedexHeaderComponent {
   @Input() showFavoritesOnly = false;

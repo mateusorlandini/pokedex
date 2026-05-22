@@ -22,11 +22,11 @@ interface EvolutionStep {
 }
 
 @Component({
-  selector: 'app-pokemon-details-page',
-  standalone: true,
-  imports: [CommonModule, RouterModule, TypeBadgeComponent, StatBarComponent],
-  templateUrl: './pokemon-details.page.html',
-  styleUrl: './pokemon-details.page.scss',
+    selector: 'app-pokemon-details-page',
+    standalone: true,
+    imports: [CommonModule, RouterModule, TypeBadgeComponent, StatBarComponent],
+    templateUrl: './pokemon-details.page.html',
+    styleUrl: './pokemon-details.page.scss'
 })
 export class PokemonDetailsPage implements OnInit {
   private readonly route = inject(ActivatedRoute);

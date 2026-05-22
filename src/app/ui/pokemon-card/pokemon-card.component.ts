@@ -8,10 +8,10 @@ import { ToastService } from '../../core/services/toast.service';
 import { TypeBadgeComponent } from '../type-badge/type-badge.component';
 
 @Component({
-  selector: 'app-pokemon-card',
-  standalone: true,
-  imports: [CommonModule, TypeBadgeComponent],
-  template: `
+    selector: 'app-pokemon-card',
+    standalone: true,
+    imports: [CommonModule, TypeBadgeComponent],
+    template: `
     <article
       class="card"
       [style.--type-color]="primaryTypeColor"
@@ -53,7 +53,7 @@ import { TypeBadgeComponent } from '../type-badge/type-badge.component';
       </div>
     </article>
   `,
-  styles: [`
+    styles: [`
     :host {
       display: block;
     }
@@ -184,7 +184,7 @@ import { TypeBadgeComponent } from '../type-badge/type-badge.component';
       gap: 6px;
       margin-top: 4px;
     }
-  `],
+  `]
 })
 export class PokemonCardComponent {
   @Input({ required: true }) pokemon!: Pokemon;

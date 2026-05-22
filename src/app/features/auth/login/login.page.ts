@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -21,11 +21,11 @@ function firebaseErrorMessage(code: string): string {
 }
 
 @Component({
-  selector: 'app-login-page',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './login.page.html',
-  styleUrl: './login.page.scss',
+    selector: 'app-login-page',
+    standalone: true,
+    imports: [ReactiveFormsModule],
+    templateUrl: './login.page.html',
+    styleUrl: './login.page.scss'
 })
 export class LoginPage {
   private readonly fb = inject(FormBuilder);

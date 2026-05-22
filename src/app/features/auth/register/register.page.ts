@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   AbstractControl,
   FormBuilder,
@@ -35,11 +35,11 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
 type RegisterField = 'name' | 'email' | 'password' | 'confirmPassword';
 
 @Component({
-  selector: 'app-register-page',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './register.page.html',
-  styleUrl: './register.page.scss',
+    selector: 'app-register-page',
+    standalone: true,
+    imports: [ReactiveFormsModule],
+    templateUrl: './register.page.html',
+    styleUrl: './register.page.scss'
 })
 export class RegisterPage {
   private readonly fb = inject(FormBuilder);

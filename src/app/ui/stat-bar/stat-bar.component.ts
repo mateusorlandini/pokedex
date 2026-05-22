@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { STAT_LABELS, STAT_COLORS } from '../../core/models/pokemon.model';
 
 @Component({
-  selector: 'app-stat-bar',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-stat-bar',
+    standalone: true,
+    imports: [],
+    template: `
     <div class="stat-row">
       <span class="stat-label">{{ label }}</span>
       <span class="stat-value">{{ value }}</span>
@@ -19,7 +19,7 @@ import { STAT_LABELS, STAT_COLORS } from '../../core/models/pokemon.model';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .stat-row {
       display: grid;
       grid-template-columns: 42px 36px 1fr;
@@ -54,7 +54,7 @@ import { STAT_LABELS, STAT_COLORS } from '../../core/models/pokemon.model';
       border-radius: 999px;
       transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
-  `],
+  `]
 })
 export class StatBarComponent implements OnInit {
   @Input({ required: true }) statName!: string;

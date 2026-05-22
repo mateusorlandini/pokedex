@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { forkJoin, of, catchError } from 'rxjs';
 
 import { PokedexHeaderComponent } from '../../layout/header/header.component';
@@ -13,17 +13,16 @@ import { Pokemon, GenerationInfo } from '../../core/models/pokemon.model';
 type SortOption = 'id-asc' | 'id-desc' | 'name-asc' | 'name-desc';
 
 @Component({
-  selector: 'app-home-page',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-home-page',
+    standalone: true,
+    imports: [
     PokedexHeaderComponent,
     TypeFilterComponent,
     PokemonCardComponent,
-    SkeletonCardComponent,
-  ],
-  templateUrl: './home.page.html',
-  styleUrl: './home.page.scss',
+    SkeletonCardComponent
+],
+    templateUrl: './home.page.html',
+    styleUrl: './home.page.scss'
 })
 export class HomePage implements OnInit {
   private readonly pokemonService = inject(PokemonService);

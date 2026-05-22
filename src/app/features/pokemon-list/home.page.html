@@ -5,7 +5,7 @@
     [showFavoritesOnly]="showFavoritesOnly()"
     (search)="onSearch($event)"
     (toggleFavorites)="onToggleFavorites()"
-  />
+    />
 
   @if (!isLoadingGenerations() && generations().length > 0) {
     <nav class="home__generations" aria-label="Generations">
@@ -16,7 +16,7 @@
             [class.home__gen-btn--active]="selectedGeneration() === gen.id"
             (click)="onSelectGeneration(gen.id)"
             [attr.aria-pressed]="selectedGeneration() === gen.id"
-          >
+            >
             <span class="home__gen-num">{{ gen.id }}</span>
             <span class="home__gen-region">{{ gen.region }}</span>
           </button>
@@ -29,7 +29,7 @@
     <app-type-filter
       [selectedType]="selectedType()"
       (typeChange)="onTypeFilter($event)"
-    />
+      />
 
     <div class="home__sort">
       <label class="home__sort-label" for="sort-select">Sort by</label>
@@ -38,7 +38,7 @@
         class="home__sort-select"
         [value]="sortOption()"
         (change)="onSort($event)"
-      >
+        >
         <option value="id-asc">Number ↑</option>
         <option value="id-desc">Number ↓</option>
         <option value="name-asc">Name A-Z</option>
@@ -47,9 +47,11 @@
     </div>
   </section>
 
-  <div class="home__count" *ngIf="!isLoading()">
-    <span>{{ currentGenerationLabel() }} — {{ filteredPokemon().length }} Pokémon found</span>
-  </div>
+  @if (!isLoading()) {
+    <div class="home__count">
+      <span>{{ currentGenerationLabel() }} — {{ filteredPokemon().length }} Pokémon found</span>
+    </div>
+  }
 
   @if (isLoading()) {
     <div class="home__grid">
@@ -94,7 +96,7 @@
     type="button"
     (click)="scrollToTop()"
     aria-label="Scroll to top"
-  >
+    >
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
       <polyline points="18 15 12 9 6 15"/>
     </svg>
