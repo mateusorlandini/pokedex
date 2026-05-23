@@ -6,6 +6,8 @@ import { catchError } from 'rxjs/operators';
 import { PokemonService } from '../../data-access/pokeapi/pokemon.service';
 import { Pokemon } from '../../core/models/pokemon.model';
 import { FavoritesService } from '../../state/favorites/favorites.service';
+import { ThemeService } from '../../core/services/theme.service';
+import { AuthService } from '../../core/services/auth.service';
 import { PokemonCardComponent } from '../../ui/pokemon-card/pokemon-card.component';
 import { PokeballSpinnerComponent } from '../../ui/loaders/pokeball-spinner.component';
 
@@ -19,6 +21,8 @@ import { PokeballSpinnerComponent } from '../../ui/loaders/pokeball-spinner.comp
 export class FavoritesPage implements OnInit {
   private readonly pokemonService = inject(PokemonService);
   readonly favoritesService = inject(FavoritesService);
+  readonly themeService = inject(ThemeService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   readonly isLoading = signal(true);
@@ -48,5 +52,11 @@ export class FavoritesPage implements OnInit {
 
   goToPokedex(): void {
     this.router.navigate(['/pokemon']);
+  }
+
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => this.router.navigate(['/login']),
+    });
   }
 }

@@ -30,8 +30,7 @@ import { STAT_LABELS, STAT_COLORS } from '../../core/models/pokemon.model';
     .stat-label {
       font-size: 0.75rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       color: var(--text-muted);
     }
 
